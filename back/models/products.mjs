@@ -5,7 +5,7 @@ import { DataTypes, Model } from "sequelize"
 import { conn } from "../config/db.mjs"
 
 // Opción Extending Model
-class Products extends Model {}
+export class Products extends Model {}
 
 Products.init(
     // El modelo debe contener:
@@ -46,7 +46,13 @@ Products.init(
             type: DataTypes.INTEGER,
             defaultValue: 0,
             validate: {
-
+                isInt: {
+                    msg: "El stock debe ser un número entero"
+                },
+                min: {
+                    args: 0,
+                    msg: "El stock no puede ser negativo"
+                }
             }
         }
     },

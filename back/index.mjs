@@ -11,14 +11,16 @@ dotenv.config()
 
 // Crear servidor Express
 const app = express()
-const port = process.env.PORT || 3000
-
-// Dentro de la función hay que agregar sequelize.sync()
-await conn.sync()
-console.log("Conectado a la base de datos")
 
 // Agregar a express el soporte para JSON
 app.use(express.json())
+// Agregar DESPUÉS de app.use(express.json())
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    res.header('Access-Control-Allow-Headers', 'Content-Type')
+    next()
+})
 
 // Crear Ruta GET para obtener productos
 app.get("/products", async (req, res) => {
@@ -75,8 +77,10 @@ app.delete("/products/:id", async (req, res) => {
 
 // Iniciar servidor express
 try{
-    app.listen(port, async () => {
-        console.log(`Servidor escuchando en http://localhost:${port}`)
+    app.listen(3000, () => {
+        console.log(`Servidor iniciado en http://localhost:3000`)
+        // Dentro de la función hay que agregar sequelize.sync()
+        conn.sync()
     })
 } catch (error) {
     console.error("No se pudo iniciar el servidor: ", error.message)
