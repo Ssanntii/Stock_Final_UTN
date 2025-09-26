@@ -1,4 +1,3 @@
-// Componente simple para error 404
 const NotFoundPage = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -8,7 +7,7 @@ const NotFoundPage = () => {
                     Página no encontrada
                 </h2>
                 <p className="text-gray-500 mb-8">
-                    La ruta que buscas no existe en nuestro sistema.
+                    La ruta que estás buscando no existe.
                 </p>
                 <a 
                     href="/" 
@@ -20,3 +19,5 @@ const NotFoundPage = () => {
         </div>
     )
 }
+
+export default NotFoundPage
