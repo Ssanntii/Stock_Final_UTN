@@ -1,3 +1,5 @@
+import Button from './Button'
+
 const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Eliminar", cancelText = "Cancelar" }) => {
   if (!isOpen) return null
 
@@ -12,23 +14,27 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText 
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white">{title}</h3>
-            <p className="text-slate-300 text-sm mt-1">{message}</p>
+            <div className="text-slate-300 text-sm mt-1">{message}</div>
           </div>
         </div>
         
         <div className="flex gap-3 mt-6">
-          <button
+          <Button
             onClick={onConfirm}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            variant="danger"
+            size="md"
+            className="flex-1"
           >
             {confirmText}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onClose}
-            className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 px-4 rounded-lg transition-colors"
+            variant="secondary"
+            size="md"
+            className="flex-1"
           >
             {cancelText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

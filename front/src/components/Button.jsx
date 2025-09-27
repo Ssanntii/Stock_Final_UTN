@@ -6,6 +6,7 @@ const Button = ({
   loading = false,
   onClick,
   type = "button",
+  className = "",
   ...props 
 }) => {
   const baseClasses = "inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200"
@@ -28,7 +29,7 @@ const Button = ({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className} ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
       {...props}
     >
       {loading && (
