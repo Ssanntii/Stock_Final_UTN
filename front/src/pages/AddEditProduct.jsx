@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router'
+
 import { fetchProductById, createProduct, updateProduct } from '../api/apiConfig'
+
+import Input from '../components/Input'
+import Button from '../components/Button'
 
 const ProductForm = () => {
   const { id } = useParams()
@@ -51,9 +55,19 @@ const ProductForm = () => {
   // Manejar cambios en inputs
   const handleChange = (e) => {
     const { name, value } = e.target
+    
+    let processedValue = value
+    if (name === 'price' && typeof value === 'string') {
+      // Reemplazar todas las comas por puntos y limpiar caracteres extra
+      processedValue = value
+        .replace(/,/g, '.') // Reemplazar todas las comas
+        .replace(/[^0-9.]/g, '') // Solo permitir números y puntos
+        .replace(/(\..*)\./g, '$1') // Eliminar puntos duplicados
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: processedValue
     }))
   }
 
@@ -181,17 +195,13 @@ const ProductForm = () => {
             
             {/* Nombre */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
-                Nombre del producto <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="text"
-                id="name"
+              <Input
+                label="Nombre del producto"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-slate-600 bg-slate-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-slate-400"
                 placeholder="Nombre del producto..."
+                required
                 disabled={submitting}
               />
             </div>
@@ -199,21 +209,19 @@ const ProductForm = () => {
             {/* Precio y Stock */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-slate-300 mb-2">
-                  Precio <span className="text-red-400">*</span>
-                </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">$</span>
-                  <input
-                    type="number"
-                    id="price"
+                  <Input
+                    label="Precio"
                     name="price"
+                    type="number"
                     value={formData.price}
                     onChange={handleChange}
-                    step="1"
+                    step="0.01"
                     min="0"
-                    className="w-full pl-8 pr-4 py-3 border border-slate-600 bg-slate-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-slate-400"
-                    placeholder="0"
+                    prefix="$"
+                    placeholder="0,00"
+                    required
                     disabled={submitting}
                   />
                 </div>
@@ -221,7 +229,7 @@ const ProductForm = () => {
 
               <div>
                 <label htmlFor="stock" className="block text-sm font-medium text-slate-300 mb-2">
-                  Stock <span className="text-red-400">*</span>
+                  Stock
                 </label>
                 <input
                   type="number"
@@ -239,10 +247,11 @@ const ProductForm = () => {
 
             {/* Botones */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 sm:flex-none inline-flex justify-center items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors duration-200"
+              <Button 
+                type="submit" 
+                variant="primary" 
+                size="lg" 
+                loading={submitting}
               >
                 {submitting ? (
                   <>
@@ -257,7 +266,7 @@ const ProductForm = () => {
                     {isEditing ? 'Actualizar Producto' : 'Guardar Producto'}
                   </>
                 )}
-              </button>
+              </Button>
               
               <Link
                 to="/"

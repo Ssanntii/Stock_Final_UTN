@@ -20,7 +20,7 @@ const ProductList = ({ products, onDeleteProduct }) => {
               </p>
               <p>
                 Valor total: <span className="font-semibold text-green-400">
-                  ${products.reduce((sum, product) => sum + (product.price * product.stock || 0), 0).toFixed(2)}
+                  ${products.reduce((sum, product) => sum + (product.price * product.stock || 0), 0).toFixed(2).replace('.', ',')}
                 </span>
               </p>
             </div>

@@ -29,20 +29,15 @@ const Home = () => {
 
   // Eliminar producto
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-      return
+  try {
+    setError(null)
+    
+    await deleteProduct(id)
+    await loadProducts() // Refrescar lista
+  }catch (err) {
+    setError(err.message)
     }
-
-    try {
-      setError(null)
-      
-      await deleteProduct(id)
-      await loadProducts() // Refrescar lista
-    } catch (err) {
-      setError(err.message)
-    }
-  }
-
+  } 
   // Cargar productos al montar el componente
   useEffect(() => {
     loadProducts()

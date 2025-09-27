@@ -15,6 +15,7 @@ export const conn = new Sequelize(
   {
     dialect: process.env.DIALECT,
     host: process.env.HOST,
-    port: process.env.PORT
+    port: process.env.PORT,
+    logging: false
   }
 )

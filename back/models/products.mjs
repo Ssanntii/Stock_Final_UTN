@@ -24,11 +24,11 @@ Products.init(
             }
         },
         price: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(10, 2), // 10 dígitos totales, 2 decimales
             allowNull: false,
             validate: {
-                isNumeric: {
-                    msg: "El precio debe ser un número"
+                isDecimal: {
+                    msg: "El precio debe ser un número decimal válido"
                 },
                 min: 0
             }
