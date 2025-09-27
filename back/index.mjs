@@ -22,13 +22,29 @@ app.use((req, res, next) => {
     next()
 })
 
-// Crear Ruta GET para obtener productos
+// Crear Ruta GET para obtener TODOS los productos
 app.get("/products", async (req, res) => {
     try {
         const products = await Products.findAll()
         res.json(products)
     } catch (error) {
         res.json({ error: error.message})
+    }
+})
+
+// Crear Ruta GET para obtener UN producto por ID
+app.get("/products/:id", async (req, res) => {
+    try {
+        const { id } = req.params
+        const product = await Products.findByPk(id)
+        
+        if (!product) {
+            return res.status(404).json({ error: "Producto no encontrado" })
+        }
+        
+        res.json(product)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
     }
 })
 

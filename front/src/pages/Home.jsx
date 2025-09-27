@@ -49,19 +49,21 @@ const Home = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-900">
       {/* Header responsive */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-slate-800 shadow-sm border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <img src={logo} alt='logo' className="mr-2.5 w-12 h-12" />
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Gestión de Productos
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Administrá tu inventario de productos
-              </p>
+            <div className="flex items-center gap-3">
+              <img src={logo} alt='logo' className="w-12 h-12 flex-shrink-0" />
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                  Gestión de Productos
+                </h1>
+                <p className="text-sm text-slate-300 mt-1">
+                  Administrá tu inventario de productos
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -72,12 +74,12 @@ const Home = () => {
         
         {/* Mostrar errores */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="mb-6 bg-red-900/50 border border-red-700 rounded-lg p-4">
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-red-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-red-800 font-medium">{error}</p>
+              <p className="text-red-300 font-medium">{error}</p>
             </div>
           </div>
         )}
@@ -86,8 +88,8 @@ const Home = () => {
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="text-gray-600 font-medium">Cargando productos...</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+              <span className="text-slate-300 font-medium">Cargando productos...</span>
             </div>
           </div>
         ) : (

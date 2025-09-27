@@ -1,23 +1,16 @@
-// Guia https://sequelize.org/docs/v6/core-concepts/model-basics/
-
-// Crear modelo a partir de SEQUELIZE
 import { DataTypes, Model } from "sequelize"
 import { conn } from "../config/db.mjs"
 
-// Opción Extending Model
 export class Products extends Model {}
 
 Products.init(
-    // El modelo debe contener:
     {
-        // id INTEGER
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        // name STRING
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -30,7 +23,6 @@ Products.init(
                 }
             }
         },
-        // price FLOAT
         price: {
             type: DataTypes.FLOAT,
             allowNull: false,
@@ -41,33 +33,37 @@ Products.init(
                 min: 0
             }
         },
-        // stock INTEGER
         stock: {
             type: DataTypes.INTEGER,
             defaultValue: 0,
             validate: {
-                isInt: {
-                    msg: "El stock debe ser un número entero"
-                },
-                min: {
-                    args: 0,
-                    msg: "El stock no puede ser negativo"
-                }
+                min: 0
             }
+        },
+        // Definir explícitamente los timestamps
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            defaultValue: DataTypes.NOW,
+            field: 'createdAt'
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            defaultValue: DataTypes.NOW,
+            field: 'updatedAt'
         }
     },
     {
         sequelize: conn,
         modelName: "Products",
         tableName: "products",
-        datetimes: true,
-        // created_at DATETIME  - Lo crea SEQUELIZE automaticamente
-        createdAt: "created_at",
-        // updated_at DATETIME - Lo crea SEQUELIZE automaticamente
-        updatedAt: "updated_at"
+        timestamps: true,
+        // Agregar hooks para manejar updatedAt manualmente
+        hooks: {
+            beforeUpdate: (product, options) => {
+                product.updatedAt = new Date();
+            }
+        }
     }
 )
-
-
-
-

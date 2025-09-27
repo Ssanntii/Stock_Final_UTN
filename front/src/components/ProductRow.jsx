@@ -6,34 +6,34 @@ const ProductRow = ({ product, onDelete }) => {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors">
       {/* Información del producto */}
       <div className="flex-1 mb-3 sm:mb-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <h3 className="font-semibold text-gray-900 text-lg">
+          <h3 className="font-semibold text-white text-lg">
             {product.name}
           </h3>
           {product.category && (
-            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+            <span className="inline-block bg-blue-600/80 text-blue-200 text-xs px-2 py-1 rounded-full font-medium">
               {product.category}
             </span>
           )}
         </div>
         
         {product.description && (
-          <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+          <p className="text-slate-400 text-sm mt-1 line-clamp-2">
             {product.description}
           </p>
         )}
         
         <div className="flex items-center gap-4 mt-2 text-sm">
-          <span className="font-medium text-green-600">
+          <span className="font-medium text-green-400">
             ${Number(product.price).toFixed(2)}
           </span>
           <span className={`font-medium ${
-            product.stock > 10 ? 'text-green-600' : 
-            product.stock > 0 ? 'text-yellow-600' : 
-            'text-red-600'
+            product.stock > 10 ? 'text-green-400' : 
+            product.stock > 0 ? 'text-yellow-400' : 
+            'text-red-400'
           }`}>
             Stock: {product.stock}
           </span>

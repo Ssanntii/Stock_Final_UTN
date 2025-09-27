@@ -59,81 +59,89 @@ const ProductForm = () => {
 
   // Validar formulario
   const validateForm = () => {
-    const errors = []
-    
-    if (!formData.name.trim()) {
-      errors.push('El nombre es obligatorio')
-    }
-    
-    if (!formData.price || parseFloat(formData.price) <= 0) {
-      errors.push('El precio debe ser mayor a 0')
-    }
-    
-    if (!formData.stock || parseInt(formData.stock) < 0) {
-      errors.push('El stock debe ser mayor o igual a 0')
-    }
+      const errors = []
+      
+      if (!formData.name.trim()) {
+          errors.push('El nombre es obligatorio')
+      }
+      
+      if (!formData.price || parseFloat(formData.price) <= 0) {
+          errors.push('El precio debe ser mayor a 0')
+      }
+      
+      // Validación más robusta del stock
+      if (formData.stock !== '' && formData.stock !== undefined) {
+          const stockNum = parseInt(formData.stock)
+          if (isNaN(stockNum) || stockNum < 0) {
+              errors.push('El stock debe ser 0 o un número positivo')
+          }
+      }
 
-    return errors
+      return errors
   }
 
   // Enviar formulario
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    const validationErrors = validateForm()
-    if (validationErrors.length > 0) {
-      setError(validationErrors.join(', '))
-      return
-    }
-
-    setSubmitting(true)
-    setError(null)
-
-    try {
-      const productData = {
-        ...formData,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock)
+      e.preventDefault()
+      
+      const validationErrors = validateForm()
+      if (validationErrors.length > 0) {
+          setError(validationErrors.join(', '))
+          return
       }
 
-      if (isEditing) {
-        await updateProduct(id, productData)
-      } else {
-        await createProduct(productData)
-      }
+      setSubmitting(true)
+      setError(null)
 
-      // Redirigir al home después del éxito
-      navigate('/')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setSubmitting(false)
-    }
+      try {
+          // Asegurar valores correctos ANTES de enviar al backend
+          const stockValue = formData.stock === '' || formData.stock === null || formData.stock === undefined 
+              ? 0 
+              : parseInt(formData.stock)
+          
+          const productData = {
+              name: formData.name.trim(),
+              price: parseFloat(formData.price),
+              stock: isNaN(stockValue) || stockValue < 0 ? 0 : stockValue
+          }
+
+          if (isEditing) {
+              await updateProduct(id, productData)
+          } else {
+              await createProduct(productData)
+          }
+
+          navigate('/')
+      } catch (err) {
+          setError(err.message)
+      } finally {
+          setSubmitting(false)
+      }
   }
 
   // Mostrar loading si estamos cargando un producto para editar
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="flex items-center space-x-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="text-gray-600 font-medium">Cargando producto...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+          <span className="text-slate-300 font-medium">Cargando producto...</span>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-slate-800 shadow-sm border-b border-slate-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">
                 {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
               </h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-slate-300 mt-1">
                 {isEditing ? 'Modificá los datos del producto' : 'Agregá un nuevo producto al inventario'}
               </p>
             </div>
@@ -141,7 +149,7 @@ const ProductForm = () => {
             {/* Botón volver */}
             <Link
               to="/"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-300 bg-slate-700 border border-slate-600 rounded-lg hover:bg-slate-600 transition-colors"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -157,24 +165,24 @@ const ProductForm = () => {
         
         {/* Mostrar errores */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="mb-6 bg-red-900/50 border border-red-700 rounded-lg p-4">
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-red-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-red-800 font-medium">{error}</p>
+              <p className="text-red-300 font-medium">{error}</p>
             </div>
           </div>
         )}
 
         {/* Formulario */}
-        <div className="bg-white rounded-xl shadow-sm border p-6 lg:p-8">
+        <div className="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-6 lg:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Nombre */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre del producto *
+              <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
+                Nombre del producto <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -182,7 +190,7 @@ const ProductForm = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full px-4 py-3 border border-slate-600 bg-slate-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-slate-400"
                 placeholder="Nombre del producto..."
                 disabled={submitting}
               />
@@ -191,11 +199,11 @@ const ProductForm = () => {
             {/* Precio y Stock */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                  Precio *
+                <label htmlFor="price" className="block text-sm font-medium text-slate-300 mb-2">
+                  Precio <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">$</span>
                   <input
                     type="number"
                     id="price"
@@ -204,7 +212,7 @@ const ProductForm = () => {
                     onChange={handleChange}
                     step="1"
                     min="0"
-                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full pl-8 pr-4 py-3 border border-slate-600 bg-slate-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-slate-400"
                     placeholder="0"
                     disabled={submitting}
                   />
@@ -212,8 +220,8 @@ const ProductForm = () => {
               </div>
 
               <div>
-                <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
-                  Stock *
+                <label htmlFor="stock" className="block text-sm font-medium text-slate-300 mb-2">
+                  Stock <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="number"
@@ -222,7 +230,7 @@ const ProductForm = () => {
                   value={formData.stock}
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 border border-slate-600 bg-slate-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-slate-400"
                   placeholder="0"
                   disabled={submitting}
                 />
@@ -253,7 +261,7 @@ const ProductForm = () => {
               
               <Link
                 to="/"
-                className="flex-1 sm:flex-none inline-flex justify-center items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200"
+                className="flex-1 sm:flex-none inline-flex justify-center items-center px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium rounded-lg transition-colors duration-200"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -263,8 +271,8 @@ const ProductForm = () => {
             </div>
 
             {/* Nota sobre campos obligatorios */}
-            <p className="text-sm text-gray-500 pt-2">
-              Los campos marcados con * son obligatorios
+            <p className="text-sm text-slate-400 pt-2">
+              Los campos marcados con <span className="text-red-400 font-semibold">*</span> son obligatorios
             </p>
           </form>
         </div>
