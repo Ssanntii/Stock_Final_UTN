@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router'
 
 import { fetchProductById, createProduct, updateProduct } from '../api/apiConfig'
 
+import logo from "../../public/stock.png"
+
 import Input from '../components/Input'
 import Button from '../components/Button'
 
@@ -151,14 +153,18 @@ const ProductForm = () => {
       <header className="bg-slate-800 shadow-sm border-b border-slate-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
-              </h1>
-              <p className="text-sm text-slate-300 mt-1">
-                {isEditing ? 'Modificá los datos del producto' : 'Agregá un nuevo producto al inventario'}
-              </p>
+            <div className="flex items-center gap-3">
+              <img src={logo} alt='logo' className="w-12 h-12 flex-shrink-0" />
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                  {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
+                </h1>
+                <p className="text-sm text-slate-300 mt-1">
+                  {isEditing ? 'Modificá los datos del producto' : 'Agregá un nuevo producto al inventario'}
+                </p>
+              </div>
             </div>
+            
             
             {/* Botón volver */}
             <Link
