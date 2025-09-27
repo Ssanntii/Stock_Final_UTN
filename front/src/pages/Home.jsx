@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import logo from "../../public/stock.png"
 
 import { fetchProducts, deleteProduct } from '../api/apiConfig'
 
 import ProductList from '../components/ProductList'
+
+import logo from "../../public/stock.png"
 
 const Home = () => {
   // Estados principales

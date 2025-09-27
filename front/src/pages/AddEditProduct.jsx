@@ -3,10 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router'
 
 import { fetchProductById, createProduct, updateProduct } from '../api/apiConfig'
 
-import logo from "../../public/stock.png"
-
 import Input from '../components/Input'
 import Button from '../components/Button'
+
+import logo from "../../public/stock.png"
 
 const ProductForm = () => {
   const { id } = useParams()
