@@ -13,9 +13,10 @@ export const conn = new Sequelize(
   process.env.USER,
   process.env.PASSWORD,
   {
-    dialect: process.env.DIALECT,
     host: process.env.HOST,
     port: process.env.PORT,
+    dialect: process.env.DIALECT,
+    timezone: "-03:00", 
     logging: false
   }
 )
