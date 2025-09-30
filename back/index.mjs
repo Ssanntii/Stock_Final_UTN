@@ -6,7 +6,6 @@ import { conn } from "./config/db.mjs"
 import { Products } from "./models/products.mjs"
 import dotenv from "dotenv"
 
-
 dotenv.config()
 
 // Crear servidor Express
@@ -14,11 +13,18 @@ const app = express()
 
 // Agregar a express el soporte para JSON
 app.use(express.json())
-// Agregar DESPUÉS de app.use(express.json())
+
+// Configuración CORS MEJORADA
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    res.header('Access-Control-Allow-Headers', 'Content-Type')
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    
+    // Manejar preflight requests
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end()
+    }
+    
     next()
 })
 
@@ -94,7 +100,7 @@ app.delete("/products/:id", async (req, res) => {
 // Iniciar servidor express
 try{
     app.listen(3000, () => {
-        console.log(`Servidor iniciado en http://localhost:3000`)
+        console.log(`Servidor iniciado en http://localhost:3000/products`)
         // Dentro de la función hay que agregar sequelize.sync()
         conn.sync()
     })
