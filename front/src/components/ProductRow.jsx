@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { useState } from 'react'
-import ConfirmModal from './Modal'
-import Button from './Button'
+import ConfirmModal from './ui/Modal'
+import Button from './ui/Button'
 
 const ProductRow = ({ product, onDelete }) => {
   const [showModal, setShowModal] = useState(false)

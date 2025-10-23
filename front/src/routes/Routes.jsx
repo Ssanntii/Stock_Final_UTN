@@ -1,6 +1,10 @@
 import { Routes, Route } from "react-router"
 
+import Public from '../components/layouts/Public'
+
 import Home from "../pages/Home"
+import Login from "../pages/Login"
+import Register from "../pages/Register"
 import ProductForm from "../pages/AddEditProduct"
 import NotFoundPage from "../pages/NotFoundPage"
 

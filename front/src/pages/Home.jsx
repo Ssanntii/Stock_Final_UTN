@@ -4,7 +4,7 @@ import { fetchProducts, deleteProduct } from '../api/apiConfig'
 
 import ProductList from '../components/ProductList'
 
-import logo from "../../public/stock.png"
+import logo from '/stock.png'
 
 const Home = () => {
   // Estados principales

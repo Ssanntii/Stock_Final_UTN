@@ -20,7 +20,7 @@ const handleError = (error, defaultMessage) => {
 // Obtener todos los productos
 export const fetchProducts = async () => {
   try {
-    const response = await fetch(API_URL)
+    const response = await fetch(`${API_URL}/products`)
     return await handleResponse(response)
   } catch (error) {
     handleError(error, 'Error de conexión con el servidor')
@@ -30,7 +30,7 @@ export const fetchProducts = async () => {
 // Obtener un producto por ID
 export const fetchProductById = async (id) => {
   try {
-    const response = await fetch(`${API_URL}/${id}`)
+    const response = await fetch(`${API_URL}/products/${id}`)
     return await handleResponse(response)
   } catch (error) {
     handleError(error, 'Error al obtener el producto')
@@ -40,7 +40,7 @@ export const fetchProductById = async (id) => {
 // Crear un nuevo producto
 export const createProduct = async (productData) => {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${API_URL}/products`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export const createProduct = async (productData) => {
 // Actualizar un producto existente
 export const updateProduct = async (id, productData) => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${API_URL}/products/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const updateProduct = async (id, productData) => {
 // Eliminar un producto
 export const deleteProduct = async (id) => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${API_URL}/products/${id}`, {
       method: 'DELETE'
     })
     return await handleResponse(response)
