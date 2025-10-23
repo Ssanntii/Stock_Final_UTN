@@ -5,6 +5,7 @@ const Button = ({
   disabled = false, 
   loading = false,
   onClick,
+  value = "",
   type = "button",
   className = "",
   ...props 
@@ -27,6 +28,7 @@ const Button = ({
   return (
     <button
       type={type}
+      value={value}
       onClick={onClick}
       disabled={disabled || loading}
       className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className} ${disabled || loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}

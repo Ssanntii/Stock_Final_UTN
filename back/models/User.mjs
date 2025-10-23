@@ -27,7 +27,7 @@ User.init({
   },
   isActivate: {
     type: DataTypes.BOOLEAN,
-    default: false
+    default: 0
   },
   activateToken: {
     type: DataTypes.STRING

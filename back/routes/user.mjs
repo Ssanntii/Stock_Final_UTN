@@ -23,7 +23,7 @@ userRoutes.post("/register", async (req, res) => {
     if (password !== confirmPassword) {
       res.status(403).json({
         error: true,
-        msg: "Las contrase~nas no coinciden"
+        msg: "Las contraseñas no coinciden"
       })
       return
     }
@@ -76,7 +76,7 @@ userRoutes.post("/login", async (req, res) => {
     if (!checkPasswd) {
       res.status(403).json({
         error: true,
-        msg: "Password incorrecto"
+        msg: "Contraseña incorrecta"
       })
       return
     }

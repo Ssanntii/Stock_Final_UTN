@@ -24,7 +24,7 @@ const Login = () => {
         email,
         password
       }
-      const url = `${import.meta.env.VITE_API_URL}/login`
+      const url = `${import.meta.env.VITE_URL}/users/login`
       const config = {
         method: "POST",
         headers: {
@@ -37,40 +37,45 @@ const Login = () => {
       const res = await req.json()
 
       if (res.error) {
-        toast.error(res.msg)
+        console.log("Error al iniciar sesión: ", res.error)
         return
       }
 
       setToken(res.token)
 
 
-    } catch {
-
+    } catch (error){
+      console.log("Error:", error)
+    } finally {
+      setLoading(false)
     }
   }
   return (
-    <Form title="Inciar Sesion" Legend={Legend} onSubmit={handleSubmit}>
-      <Input
-        type="email"
-        id="email"
-        name="email"
-        title="Email"
-        placeholder="patito@patito.com"
-        value={email}
-        onChange={(e) => { setEmail(e.target.value) }}
-      />
-      <Input
-        type="password"
-        id="password"
-        name="password"
-        placeholder="Patito123"
-        title="Contrasena"
-        value={password}
-        onChange={(e) => { setPassword(e.target.value) }}
-      />
-      <Button type='submit' value="Iniciar Sesion" />
-
-    </Form>
+    <div className="mx-auto flex flex-col items-center justify-center min-h-screen bg-gradient-to-bl from-sky-300 to-fuchsia-400">
+      <Form title="Inciar Sesión" Legend={Legend} onSubmit={handleSubmit}>
+        <Input
+          type="email"
+          id="email"
+          name="email"
+          title="Email"
+          placeholder="patito@patito.com"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value) }}
+        />
+        <Input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Patito123"
+          title="Contrasena"
+          value={password}
+          onChange={(e) => { setPassword(e.target.value) }}
+        />
+        <Button type='submit'>
+          {loading ? 'Cargando...' : 'Iniciar Sesión'}
+        </Button>
+      </Form>
+    </div>
   )
 }
 
