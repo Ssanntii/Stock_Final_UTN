@@ -39,31 +39,10 @@ Products.init(
             validate: {
                 min: 0
             }
-        },
-        // Definir explícitamente los timestamps
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
-            defaultValue: DataTypes.NOW,
-            field: 'createdAt'
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
-            defaultValue: DataTypes.NOW,
-            field: 'updatedAt'
         }
     },
     {
         sequelize: conn,
-        modelName: "Products",
-        tableName: "products",
-        timestamps: true,
-        // Agregar hooks para manejar updatedAt manualmente
-        hooks: {
-            beforeUpdate: (product, options) => {
-                product.updatedAt = new Date();
-            }
-        }
+        tableName: "products"
     }
 )

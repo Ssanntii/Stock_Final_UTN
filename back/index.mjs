@@ -2,108 +2,33 @@
 
 // Importar Express
 import express from "express"
+import "dotenv/config"
+import cors from "cors"
 import { conn } from "./config/db.mjs"
-import { Products } from "./models/products.mjs"
-import dotenv from "dotenv"
-
-dotenv.config()
+import { productRoutes } from "./routes/product.mjs"
+import { userRoutes } from "./routes/user.mjs"
 
 // Crear servidor Express
 const app = express()
+const PORT = process.argv[2] ?? 3000
+
+// Configurar CORS
+app.use(cors())
 
 // Agregar a express el soporte para JSON
 app.use(express.json())
 
-// Configuración CORS MEJORADA
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    
-    // Manejar preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end()
-    }
-    
-    next()
-})
-
-// Crear Ruta GET para obtener TODOS los productos
-app.get("/products", async (req, res) => {
-    try {
-        const products = await Products.findAll()
-        res.json(products)
-    } catch (error) {
-        res.json({ error: error.message})
-    }
-})
-
-// Crear Ruta GET para obtener UN producto por ID
-app.get("/products/:id", async (req, res) => {
-    try {
-        const { id } = req.params
-        const product = await Products.findByPk(id)
-        
-        if (!product) {
-            return res.status(404).json({ error: "Producto no encontrado" })
-        }
-        
-        res.json(product)
-    } catch (error) {
-        res.status(500).json({ error: error.message })
-    }
-})
-
-// Crear Ruta POST para crear producto
-app.post("/products", async (req, res) => {
-    try {
-        const { name, price, stock } = req.body
-        const newProduct = await Products.create({ name, price, stock})
-        res.json(newProduct)   
-    } catch (error) {
-        res.json({ error: error.message})
-    }
-})
-
-// Crear Ruta PUT para modificar producto
-app.put("/products/:id", async (req, res) => {
-    try {
-        const { id } = req.params
-        const { name, price, stock } = req.body
-        const product = await Products.findByPk(id)
-        if (!product) return res.json({ error: "Producto no encontrado" })
-        
-        product.name = name
-        product.price = price
-        product.stock = stock
-        await product.save()
-        res.json(product)
-    } catch (error) {
-        res.json({ error: error.message})
-    }
-})
-
-// Crear Ruta DELETE para eliminar un producto
-app.delete("/products/:id", async (req, res) => {
-    try {
-        const { id } = req.params
-        const product = await Products.findByPk(id)
-        if (!product) return res.json({ error: "Producto no encontrado" })
-
-        await product.destroy()
-        res.json({ message: "Producto eliminado" })
-    } catch (error) {
-        res.json({ error: error.message})
-    }
-})
+app.use("/products", productRoutes)
+app.use("/users", userRoutes)
 
 // Iniciar servidor express
-try{
-    app.listen(3000, () => {
-        console.log(`Servidor iniciado en http://localhost:3000/products`)
+
+app.listen(PORT, () => {
+    try{
+        console.log(`Servidor iniciado en http://localhost:${PORT}`)
         // Dentro de la función hay que agregar sequelize.sync()
         conn.sync()
-    })
-} catch (error) {
-    console.error("No se pudo iniciar el servidor: ", error.message)
-}
+    } catch (error) {
+        console.error("No se pudo iniciar el servidor: ", error.message)
+    }
+})
