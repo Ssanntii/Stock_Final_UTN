@@ -6,12 +6,14 @@ import jwt from 'jsonwebtoken'
 export const userRoutes = Router()
 
 userRoutes.get("/", async (req, res) => {
+
   const users = await User.findAll()
 
   res.json({
     error: false,
     users
   })
+
 })
 
 // REGISTER
@@ -23,7 +25,7 @@ userRoutes.post("/register", async (req, res) => {
     if (password !== confirmPassword) {
       res.status(403).json({
         error: true,
-        msg: "Las contraseñas no coinciden"
+        msg: "Las contrase~nas no coinciden"
       })
       return
     }
@@ -49,6 +51,7 @@ userRoutes.post("/register", async (req, res) => {
       msg: err.message
     })
   }
+
 })
 
 // LOGIN
@@ -76,7 +79,7 @@ userRoutes.post("/login", async (req, res) => {
     if (!checkPasswd) {
       res.status(403).json({
         error: true,
-        msg: "Contraseña incorrecta"
+        msg: "Password incorrecto"
       })
       return
     }
@@ -89,7 +92,11 @@ userRoutes.post("/login", async (req, res) => {
 
     res.json({
       error: false,
-      token: token
+      user: {
+        full_name: user.fullName,
+        email: user.email,
+        token: `Bearer ${token}`
+      }
     })
   } catch {
     res.status(500).json({
@@ -97,4 +104,25 @@ userRoutes.post("/login", async (req, res) => {
       msg: "Hubo un error al iniciar sesion"
     })
   }
+})
+
+userRoutes.get("/verify-token", async (req, res) => {
+
+  const headers = req.headers
+  const auth = headers.authorization
+  // Bearer LKJFLKJFUDOSIJLKLKFJDSLK
+  const token = auth.split(" ")[1]
+
+  const verify = jwt.verify(token, process.env.SECRET)
+
+  console.log(verify)
+
+  if (!verify) {
+    res.json({ error: true })
+    return
+  }
+
+  res.json({
+    error: false
+  })
 })

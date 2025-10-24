@@ -58,7 +58,7 @@ const Register = () => {
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center min-h-screen bg-gradient-to-bl from-sky-300 to-fuchsia-400">
-      <Form title="Crear cuenta" Legend={Legend} onSubmit={handleSubmit}>
+      <Form title="Registrarse" Legend={Legend} onSubmit={handleSubmit}>
         <Input
           name="Fullname"
           type="text"

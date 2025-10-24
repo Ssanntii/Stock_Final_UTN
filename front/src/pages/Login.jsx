@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+
 import { Form } from '../components/Form'
-import Input from "../components/ui/Input"
-import Button from "../components/ui/Button"
-import { useStore } from "../store/useStore"
+import Input from '../components/ui/Input'
+import Button from '../components/ui/Button'
+
+import { useStore } from '../store/useStore'
 
 const Legend = () => {
   return <p>No tiene cuenta? <Link to="/register" className="underline text-sky-800" >Registrate</Link></p>
 }
 
 const Login = () => {
-  const setToken = useStore(state => state.setToken)
+  const { setUser } = useStore()
   // Estados
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -24,7 +26,7 @@ const Login = () => {
         email,
         password
       }
-      const url = `${import.meta.env.VITE_URL}/users/login`
+      const url = `${import.meta.env.VITE_API_URL}/users/login`
       const config = {
         method: "POST",
         headers: {
@@ -37,22 +39,23 @@ const Login = () => {
       const res = await req.json()
 
       if (res.error) {
-        console.log("Error al iniciar sesión: ", res.error)
+        console.log("Error al iniciar sesión: ",res.msg)
         return
       }
 
-      setToken(res.token)
+      setUser(res.user)
+      console.log("Sesión iniciada!")
 
-
-    } catch (error){
+    } catch {
       console.log("Error:", error)
     } finally {
       setLoading(false)
     }
   }
+
   return (
     <div className="mx-auto flex flex-col items-center justify-center min-h-screen bg-gradient-to-bl from-sky-300 to-fuchsia-400">
-      <Form title="Inciar Sesión" Legend={Legend} onSubmit={handleSubmit}>
+      <Form title="Iniciar Sesion" Legend={Legend} onSubmit={handleSubmit}>
         <Input
           type="email"
           id="email"
@@ -78,6 +81,5 @@ const Login = () => {
     </div>
   )
 }
-
 
 export default Login
