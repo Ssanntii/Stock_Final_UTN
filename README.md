@@ -1,4 +1,4 @@
-##Preguntas
+## Preguntas
 
 ```jsx
 import { sequelize } from './config/db.mjs'
