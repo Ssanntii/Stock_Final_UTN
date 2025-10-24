@@ -1,6 +1,6 @@
 ##Preguntas
 
-```javascriptreact
+```jsx
 import { sequelize } from './config/db.mjs'
 import './config/db.mjs'
 //??
