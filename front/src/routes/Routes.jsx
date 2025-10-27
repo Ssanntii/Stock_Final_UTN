@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router"
 
 import Public from '../components/layouts/Public'
+import Private from '../components/layouts/Private'
 
 import Home from "../pages/Home"
 import Login from "../pages/Login"
@@ -26,6 +27,9 @@ const AppRoutes = () => {
                 path="/product" 
                 element={<ProductForm />} 
             />
+            <Route element={<Private />} path="/private">
+                <Route index element={<h1>Rutas privadas</h1>} />
+            </Route>
             {/* Ruta para errores 404 - Debe ir al final */}
             <Route
                 path="/*"

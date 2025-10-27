@@ -26,7 +26,7 @@ const Login = () => {
         email,
         password
       }
-      const url = `${import.meta.env.VITE_API_URL}/users/login`
+      const url = `${import.meta.env.VITE_URL}/users/login`
       const config = {
         method: "POST",
         headers: {

@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from 'react-router'
-import { useStore } from '../store/useStore'
+import { useStore } from '../../store/useStore'
 import { useEffect } from 'react'
 
 
