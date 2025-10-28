@@ -19,7 +19,9 @@ User.init({
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: {
+      msg: "Ya existe un usuario registrado con ese email"
+    },
     validate: {
       isEmail: {
         msg: "Coloque un email valido"

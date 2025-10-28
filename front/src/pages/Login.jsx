@@ -53,7 +53,6 @@ const Login = () => {
       
       navigate("/")
     } catch (error) {
-      console.log("Error:", error)
       setError(error.message || "Error al iniciar sesión")
     } finally {
       setLoading(false)

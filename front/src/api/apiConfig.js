@@ -1,5 +1,8 @@
 const API_URL = import.meta.env.VITE_URL
 
+
+// ========== HELPERS ==========
+
 // Función helper para manejar respuestas
 const handleResponse = async (response) => {
   const data = await response.json()
@@ -14,7 +17,6 @@ const handleResponse = async (response) => {
 
 // Función helper para manejar errores
 const handleError = (error, defaultMessage) => {
-  console.error('API Error:', error)
   throw new Error(error.message || defaultMessage)
 }
 
@@ -98,6 +100,7 @@ export const registerUser = async (userData) => {
     })
     return await handleResponse(response)
   } catch (error) {
+    console.log(error)
     handleError(error, 'Error al registrar el usuario')
   }
 }
