@@ -98,7 +98,6 @@ useEffect(()=>{
               errors.push('El stock debe ser 0 o un número positivo')
           }
       }
-
       return errors
   }
 

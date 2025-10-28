@@ -5,47 +5,38 @@ import { Form } from '../components/Form'
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
 
+import { loginUser } from '../api/apiConfig'
 import { useStore } from '../store/useStore'
 
 const Legend = () => {
-  return <p>No tiene cuenta? <Link to="/register" className="underline text-sky-800" >Registrate</Link></p>
+  return <p>No tiene cuenta? <Link to="/auth/register" className="underline text-sky-800" >Registrate</Link></p>
 }
 
 const Login = () => {
+
   const { setUser } = useStore()
+
   // Estados
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+
   // Funciones
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-
       const body = {
         email,
         password
       }
-      const url = `${import.meta.env.VITE_URL}/users/login`
-      const config = {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(body)
-      }
-
-      const req = await fetch(url, config)
-      const res = await req.json()
-
-      if (res.error) {
-        console.log("Error al iniciar sesión: ",res.msg)
-        return
-      }
-
-      setUser(res.user)
+      const data = await loginUser(body)
+      
+      setUser({
+        full_name: data.fullname,
+        email: data.email,
+        token: data.token
+      })
       console.log("Sesión iniciada!")
-
     } catch {
       console.log("Error:", error)
     } finally {

@@ -1,5 +1,7 @@
 import { Outlet, useNavigate } from 'react-router'
 import { useEffect, useState } from 'react'
+
+import { verifyToken } from '../../api/apiConfig'
 import { useStore } from '../../store/useStore'
 
 const Public = () => {
@@ -9,37 +11,22 @@ const Public = () => {
 
     async function verifyUser() {
       try{
-        const url = `${import.meta.env.VITE_URL}/users/verify-token`
-      const config = {
-        method: "GET",
-        headers: {
-          'content-type': "application/json",
-          'authorization': user.token
+        const data = await verifyToken()
+
+        if (data.error) {
+          setUser({
+            full_name: null,
+            email: null,
+            token: null
+          })
         }
-      }
 
-      const req = await fetch(url, config)
-      const res = await req.json()
-      console.log(res)
-
-      if (res.error) {
-        setUser({
-          full_name: null,
-          token: null,
-          email: null
-        })
-        return
-      }
-
-      navigate("/private")
+        navigate("/")
       } catch(error) {
         console.log(error)
       }
-      
-
     }
     verifyUser()
-
   }, [user])
   return (
     <div className="min-h-screen bg-slate-900">

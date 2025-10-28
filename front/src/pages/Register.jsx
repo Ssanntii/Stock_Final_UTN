@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
+
 import { Form } from '../components/Form'
 import Input from '../components/ui/Input'
 import Button from "../components/ui/Button"
-import { Link } from 'react-router'
+
+import { registerUser } from '../api/apiConfig'
 
 const Legend = () => {
-  return <p>Ya tiene cuenta? <Link to="/login" className='underline text-sky-800'>Inicia Sesion</Link></p>
+  return <p>Ya tiene cuenta? <Link to="/auth" className='underline text-sky-800'>Inicia Sesion</Link></p>
 }
 
 const Register = () => {
@@ -21,27 +24,13 @@ const Register = () => {
     e.preventDefault()
     setLoading(true)
     try {
-      const url = `${import.meta.env.VITE_URL}/users/register`
       const body = {
         fullName,
         email,
         password,
         confirmPassword
       }
-
-      const req = await fetch(url, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
-        body: JSON.stringify(body)
-      })
-
-      const res = await req.json()
-
-      if (res.error) {
-        return
-      }
+      await registerUser(body)
 
       setFullName("")
       setEmail("")

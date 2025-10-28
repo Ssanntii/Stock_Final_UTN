@@ -8,7 +8,7 @@ const handleResponse = async (response) => {
     throw new Error(data.error)
   }
   
-  return data ?? []
+  return data
 }
 
 // Función helper para manejar errores
@@ -16,6 +16,8 @@ const handleError = (error, defaultMessage) => {
   console.error('API Error:', error)
   throw new Error(error.message || defaultMessage)
 }
+
+// ========== PRODUCTOS ==========
 
 // Obtener todos los productos
 export const fetchProducts = async () => {
@@ -78,5 +80,56 @@ export const deleteProduct = async (id) => {
     return await handleResponse(response)
   } catch (error) {
     handleError(error, 'Error al eliminar producto')
+  }
+}
+
+// ========== USUARIOS ==========
+
+// Registrar un usuario
+export const registerUser = async (userData) => {
+  try {
+    const response = await fetch(`${API_URL}/users/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData)
+    })
+    return await handleResponse(response)
+  } catch (error) {
+    handleError(error, 'Error al registrar el usuario')
+  }
+}
+
+// Iniciar sesión de un usuario
+export const loginUser = async (credentials) => {
+  try {
+    const response = await fetch(`${API_URL}/users/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(credentials)
+    })
+    console.log(response)
+    return await handleResponse(response)
+  } catch (error) {
+    handleError(error, 'Error al iniciar sesión')
+  }
+}
+
+// Verificar token
+export const verifyToken = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/users/verify-token`, {
+      method:  'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token
+      }
+    })
+    return await handleResponse(response)
+  } catch (error) {
+    handleError(error, 'Error al verificar el usuario')
   }
 }
