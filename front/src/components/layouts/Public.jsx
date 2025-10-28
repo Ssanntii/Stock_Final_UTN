@@ -8,7 +8,8 @@ const Public = () => {
   useEffect(() => {
 
     async function verifyUser() {
-      const url = `${import.meta.env.VITE_API_URL}/users/verify-token`
+      try{
+        const url = `${import.meta.env.VITE_URL}/users/verify-token`
       const config = {
         method: "GET",
         headers: {
@@ -19,6 +20,7 @@ const Public = () => {
 
       const req = await fetch(url, config)
       const res = await req.json()
+      console.log(res)
 
       if (res.error) {
         setUser({
@@ -30,6 +32,10 @@ const Public = () => {
       }
 
       navigate("/private")
+      } catch(error) {
+        console.log(error)
+      }
+      
 
     }
     verifyUser()

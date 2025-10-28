@@ -8,7 +8,7 @@ const handleResponse = async (response) => {
     throw new Error(data.error)
   }
   
-  return data
+  return data ?? []
 }
 
 // Función helper para manejar errores

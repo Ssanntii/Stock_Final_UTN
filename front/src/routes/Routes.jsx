@@ -12,24 +12,22 @@ import NotFoundPage from "../pages/NotFoundPage"
 const AppRoutes = () => {
     return (
         <Routes>
-            <Route element={<Public />} path="/">
-                {/* Ruta principal - Lista de productos */}
-                <Route index element={<Home />} />
-                <Route path="login" element={<Login />} />
+             {/* Ruta principal - Lista de productos */}
+            <Route path="/" element={<Home />} />
+            <Route element={<Public />} path="/auth">
+                <Route index element={<Login />} />
                 <Route path="register" element={<Register />} />
             </Route>
+
             {/* Ruta para crear/modificar productos */}
-            <Route 
-                path="/product/:id" 
-                element={<ProductForm />} 
-            />
             <Route 
                 path="/product" 
                 element={<ProductForm />} 
             />
-            <Route element={<Private />} path="/private">
-                <Route index element={<h1>Rutas privadas</h1>} />
-            </Route>
+            <Route 
+                path="/product/:id" 
+                element={<ProductForm />} 
+            />
             {/* Ruta para errores 404 - Debe ir al final */}
             <Route
                 path="/*"

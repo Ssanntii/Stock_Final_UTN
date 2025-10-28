@@ -64,7 +64,7 @@ const ProductList = ({ products, onDeleteProduct }) => {
           <div className="space-y-3">
             {products.map(product => (
               <ProductRow 
-                key={product.id} 
+                key={product?.id} 
                 product={product} 
                 onDelete={onDeleteProduct}
               />

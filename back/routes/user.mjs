@@ -107,22 +107,30 @@ userRoutes.post("/login", async (req, res) => {
 })
 
 userRoutes.get("/verify-token", async (req, res) => {
+  try{
+    const headers = req.headers
+    const auth = headers.authorization
+    // Bearer token
 
-  const headers = req.headers
-  const auth = headers.authorization
-  // Bearer LKJFLKJFUDOSIJLKLKFJDSLK
-  const token = auth.split(" ")[1]
+    if(auth === "") {
+      res.json({ error: true })
+      return
+    }
+    const token = auth.split(" ")[1]
 
-  const verify = jwt.verify(token, process.env.SECRET)
+    const verify = jwt.verify(token, process.env.SECRET)
 
-  console.log(verify)
+    console.log(verify)
 
-  if (!verify) {
-    res.json({ error: true })
-    return
+    if (!verify) {
+      res.json({ error: true })
+      return
+    }
+
+    res.json({
+      error: false
+    })
+  } catch {
+    res.json({ error : true})
   }
-
-  res.json({
-    error: false
-  })
 })

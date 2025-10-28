@@ -13,6 +13,7 @@ const ProductForm = () => {
   const navigate = useNavigate()
   const isEditing = Boolean(id)
 
+
   // Estados del formulario
   const [formData, setFormData] = useState({
     name: '',
@@ -26,13 +27,18 @@ const ProductForm = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
-
-  // Cargar producto si estamos editando
+useEffect(()=>{
+  //dasd
+}) 
+// Cargar producto si estamos editando
   useEffect(() => {
     if (isEditing) {
       loadProduct()
     }
   }, [id])
+
+
+
 
   const loadProduct = async () => {
     try {
