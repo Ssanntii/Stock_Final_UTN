@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router"
 
 import Public from '../components/layouts/Public'
+import ProtectedRoute from '../components/ProtectedRoute'
 
 import Home from "../pages/Home"
 import Login from "../pages/Login"
@@ -11,23 +12,31 @@ import NotFoundPage from "../pages/NotFoundPage"
 const AppRoutes = () => {
     return (
         <Routes>
-             {/* Ruta principal - Lista de productos */}
+            {/* Ruta principal - Lista de productos */}
             <Route path="/" element={<Home />} />
 
-            {/*Rutas de autenticación */}
+            {/* Rutas de autenticación */}
             <Route element={<Public />} path="/auth">
                 <Route index element={<Login />} />
                 <Route path="register" element={<Register />} />
             </Route>
 
-            {/* Ruta para crear/modificar productos */}
+            {/* Rutas protegidas para crear/modificar productos */}
             <Route 
                 path="/product" 
-                element={<ProductForm />} 
+                element={
+                    <ProtectedRoute>
+                        <ProductForm />
+                    </ProtectedRoute>
+                } 
             />
             <Route 
                 path="/product/:id" 
-                element={<ProductForm />} 
+                element={
+                    <ProtectedRoute>
+                        <ProductForm />
+                    </ProtectedRoute>
+                } 
             />
 
             {/* Ruta para errores 404 - Debe ir al final */}

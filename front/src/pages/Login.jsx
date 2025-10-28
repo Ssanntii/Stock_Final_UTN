@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 import { Form } from '../components/Form'
 import Input from '../components/ui/Input'
@@ -9,21 +9,25 @@ import { loginUser } from '../api/apiConfig'
 import { useStore } from '../store/useStore'
 
 const Legend = () => {
-  return <p>No tiene cuenta? <Link to="/auth/register" className="underline text-sky-800" >Registrate</Link></p>
+  return <p>No tiene cuenta? <Link to="/auth/register" className="underline text-sky-800">Registrate</Link></p>
 }
 
 const Login = () => {
-
   const { setUser } = useStore()
+  const navigate = useNavigate()
 
   // Estados
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   // Funciones
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
+    setError(null)
+
     try {
       const body = {
         email,
@@ -36,9 +40,11 @@ const Login = () => {
         email: data.email,
         token: data.token
       })
-      console.log("Sesión iniciada!")
-    } catch {
+      
+      navigate("/")
+    } catch (error) {
       console.log("Error:", error)
+      setError(error.message || "Error al iniciar sesión")
     } finally {
       setLoading(false)
     }
@@ -47,6 +53,12 @@ const Login = () => {
   return (
     <div className="mx-auto flex flex-col items-center justify-center min-h-screen bg-gradient-to-bl from-sky-300 to-fuchsia-400">
       <Form title="Iniciar Sesion" Legend={Legend} onSubmit={handleSubmit}>
+        {error && (
+          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+        
         <Input
           type="email"
           id="email"
@@ -55,6 +67,7 @@ const Login = () => {
           placeholder="patito@patito.com"
           value={email}
           onChange={(e) => { setEmail(e.target.value) }}
+          disabled={loading}
         />
         <Input
           type="password"
@@ -64,8 +77,9 @@ const Login = () => {
           title="Contrasena"
           value={password}
           onChange={(e) => { setPassword(e.target.value) }}
+          disabled={loading}
         />
-        <Button type='submit'>
+        <Button type='submit' disabled={loading} loading={loading}>
           {loading ? 'Cargando...' : 'Iniciar Sesión'}
         </Button>
       </Form>

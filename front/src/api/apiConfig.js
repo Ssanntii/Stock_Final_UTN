@@ -111,7 +111,6 @@ export const loginUser = async (credentials) => {
       },
       body: JSON.stringify(credentials)
     })
-    console.log(response)
     return await handleResponse(response)
   } catch (error) {
     handleError(error, 'Error al iniciar sesión')

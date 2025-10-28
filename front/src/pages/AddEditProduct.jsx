@@ -13,7 +13,6 @@ const ProductForm = () => {
   const navigate = useNavigate()
   const isEditing = Boolean(id)
 
-
   // Estados del formulario
   const [formData, setFormData] = useState({
     name: '',
@@ -27,18 +26,13 @@ const ProductForm = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
-useEffect(()=>{
-  //dasd
-}) 
-// Cargar producto si estamos editando
+
+  // Cargar producto si estamos editando
   useEffect(() => {
     if (isEditing) {
       loadProduct()
     }
   }, [id])
-
-
-
 
   const loadProduct = async () => {
     try {
@@ -81,63 +75,63 @@ useEffect(()=>{
 
   // Validar formulario
   const validateForm = () => {
-      const errors = []
-      
-      if (!formData.name.trim()) {
-          errors.push('El nombre es obligatorio')
+    const errors = []
+    
+    if (!formData.name.trim()) {
+      errors.push('El nombre es obligatorio')
+    }
+    
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      errors.push('El precio debe ser mayor a 0')
+    }
+    
+    // Validación más robusta del stock
+    if (formData.stock !== '' && formData.stock !== undefined) {
+      const stockNum = parseInt(formData.stock)
+      if (isNaN(stockNum) || stockNum < 0) {
+        errors.push('El stock debe ser 0 o un número positivo')
       }
-      
-      if (!formData.price || parseFloat(formData.price) <= 0) {
-          errors.push('El precio debe ser mayor a 0')
-      }
-      
-      // Validación más robusta del stock
-      if (formData.stock !== '' && formData.stock !== undefined) {
-          const stockNum = parseInt(formData.stock)
-          if (isNaN(stockNum) || stockNum < 0) {
-              errors.push('El stock debe ser 0 o un número positivo')
-          }
-      }
-      return errors
+    }
+    return errors
   }
 
   // Enviar formulario
   const handleSubmit = async (e) => {
-      e.preventDefault()
+    e.preventDefault()
+    
+    const validationErrors = validateForm()
+    if (validationErrors.length > 0) {
+      setError(validationErrors.join(', '))
+      return
+    }
+
+    setSubmitting(true)
+    setError(null)
+
+    try {
+      // Asegurar valores correctos ANTES de enviar al backend
+      const stockValue = formData.stock === '' || formData.stock === null || formData.stock === undefined 
+        ? 0 
+        : parseInt(formData.stock)
       
-      const validationErrors = validateForm()
-      if (validationErrors.length > 0) {
-          setError(validationErrors.join(', '))
-          return
+      const productData = {
+        name: formData.name.trim(),
+        price: parseFloat(formData.price),
+        stock: isNaN(stockValue) || stockValue < 0 ? 0 : stockValue
       }
 
-      setSubmitting(true)
-      setError(null)
-
-      try {
-          // Asegurar valores correctos ANTES de enviar al backend
-          const stockValue = formData.stock === '' || formData.stock === null || formData.stock === undefined 
-              ? 0 
-              : parseInt(formData.stock)
-          
-          const productData = {
-              name: formData.name.trim(),
-              price: parseFloat(formData.price),
-              stock: isNaN(stockValue) || stockValue < 0 ? 0 : stockValue
-          }
-
-          if (isEditing) {
-              await updateProduct(id, productData)
-          } else {
-              await createProduct(productData)
-          }
-
-          navigate('/')
-      } catch (err) {
-          setError(err.message)
-      } finally {
-          setSubmitting(false)
+      if (isEditing) {
+        await updateProduct(id, productData)
+      } else {
+        await createProduct(productData)
       }
+
+      navigate('/')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   // Mostrar loading si estamos cargando un producto para editar
@@ -169,7 +163,6 @@ useEffect(()=>{
                 </p>
               </div>
             </div>
-            
             
             {/* Botón volver */}
             <Link

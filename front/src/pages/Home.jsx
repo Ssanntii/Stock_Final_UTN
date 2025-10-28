@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router'
 
 import { fetchProducts, deleteProduct } from '../api/apiConfig'
+import { useStore } from '../store/useStore'
 
 import ProductList from '../components/ProductList'
+import Button from '../components/ui/Button'
 
 import logo from '/stock.png'
 
 const Home = () => {
+  const navigate = useNavigate()
+  const { user, logout } = useStore()
+  const isAuthenticated = user.token !== null && user.email !== null
+
   // Estados principales
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -29,15 +36,22 @@ const Home = () => {
 
   // Eliminar producto
   const handleDeleteProduct = async (id) => {
-  try {
-    setError(null)
-    
-    await deleteProduct(id)
-    await loadProducts() // Refrescar lista
-  }catch (err) {
-    setError(err.message)
+    try {
+      setError(null)
+      
+      await deleteProduct(id)
+      await loadProducts()
+    } catch (err) {
+      setError(err.message)
     }
-  } 
+  }
+
+  // Cerrar sesión
+  const handleLogout = () => {
+    logout()
+    setError(null)
+  }
+  
   // Cargar productos al montar el componente
   useEffect(() => {
     loadProducts()
@@ -56,9 +70,40 @@ const Home = () => {
                   Gestión de Productos
                 </h1>
                 <p className="text-sm text-slate-300 mt-1">
-                  Administrá tu inventario de productos
+                  {isAuthenticated 
+                    ? `Bienvenido, ${user.full_name}!` 
+                    : 'Administrá tu inventario de productos'}
                 </p>
               </div>
+            </div>
+
+            {/* Botones de autenticación o logout */}
+            <div className="flex items-center gap-3">
+              {isAuthenticated ? (
+                <Button 
+                  variant="danger" 
+                  size="md"
+                  onClick={handleLogout}
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Cerrar Sesión
+                </Button>
+              ) : (
+                <>
+                  <Link to="/auth">
+                    <Button variant="secondary" size="md">
+                      Iniciar Sesión
+                    </Button>
+                  </Link>
+                  <Link to="/auth/register">
+                    <Button variant="primary" size="md">
+                      Registrarse
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -91,6 +136,7 @@ const Home = () => {
           <ProductList 
             products={products} 
             onDeleteProduct={handleDeleteProduct}
+            isAuthenticated={isAuthenticated}
           />
         )}
       </main>
