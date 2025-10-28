@@ -10,6 +10,11 @@ User.init({
   fullName: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      isAlpha: {
+        msg: "El nombre no puede contener números o caracteres especiales"
+      }
+    }
   },
   email: {
     type: DataTypes.STRING,

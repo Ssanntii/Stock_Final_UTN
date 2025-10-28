@@ -25,10 +25,11 @@ userRoutes.post("/register", async (req, res) => {
     if (password !== confirmPassword) {
       res.status(403).json({
         error: true,
-        msg: "Las contrase~nas no coinciden"
+        msg: "Las contraseñas no coinciden"
       })
       return
     }
+    
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
     const activateToken = "123"
@@ -79,7 +80,7 @@ userRoutes.post("/login", async (req, res) => {
     if (!checkPasswd) {
       res.status(403).json({
         error: true,
-        msg: "Password incorrecto"
+        msg: "Contraseña incorrecta"
       })
       return
     }
