@@ -7,7 +7,7 @@ export class User extends Model {
 }
 
 User.init({
-  fullName: {
+  full_name: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {

@@ -21,7 +21,7 @@ const Register = () => {
   const navigate = useNavigate()
 
   // Estados del componente
-  const [fullName, setFullName] = useState("")
+  const [full_name, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -38,7 +38,7 @@ const Register = () => {
 
     try {
       const body = {
-        fullName,
+        full_name,
         email,
         password,
         confirmPassword
@@ -121,16 +121,16 @@ const Register = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Input Nombre completo con icono */}
               <div className="space-y-2">
-                <label htmlFor="fullName" className="block text-sm font-medium text-slate-300">
+                <label htmlFor="full_name" className="block text-sm font-medium text-slate-300">
                   Nombre Completo
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
-                    id="fullName"
+                    id="full_name"
                     placeholder="Juan Pérez"
-                    value={fullName}
+                    value={full_name}
                     onChange={(e) => setFullName(e.target.value)}
                     disabled={loading}
                     className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"

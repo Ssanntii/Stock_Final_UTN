@@ -21,7 +21,7 @@ userRoutes.post("/register", async (req, res) => {
   const body = req.body
 
   try {
-    const { fullName, email, password, confirmPassword } = body
+    const { full_name, email, password, confirmPassword } = body
     if (password !== confirmPassword) {
       res.status(403).json({
         error: true,
@@ -34,7 +34,7 @@ userRoutes.post("/register", async (req, res) => {
     const hash = await bcrypt.hash(password, salt)
     const activateToken = "123"
     const user = new User({
-      fullName,
+      full_name,
       email,
       hash,
       activateToken
@@ -94,7 +94,7 @@ userRoutes.post("/login", async (req, res) => {
     res.json({
       error: false,
       user: {
-        full_name: user.fullName,
+        full_name: user.full_name,
         email: user.email,
         token: `Bearer ${token}`
       }
@@ -121,7 +121,7 @@ userRoutes.get("/verify-token", async (req, res) => {
 
     const verify = jwt.verify(token, process.env.SECRET)
 
-    console.log(verify)
+    console.log(verify) //Quitar al final
 
     if (!verify) {
       res.json({ error: true })

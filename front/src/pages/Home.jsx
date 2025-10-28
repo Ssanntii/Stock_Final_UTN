@@ -71,7 +71,7 @@ const Home = () => {
                 </h1>
                 <p className="text-sm text-slate-300 mt-1">
                   {isAuthenticated 
-                    ? `Bienvenido, ${user.fullName}!` 
+                    ? `Bienvenido, ${user.full_name}!` 
                     : 'Administrá tu inventario de productos'}
                 </p>
               </div>

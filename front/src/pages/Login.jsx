@@ -46,7 +46,7 @@ const Login = () => {
       const data = await loginUser(body)
       
       setUser({
-        full_name: data.fullname,
+        full_name: data.full_name,
         email: data.email,
         token: data.token
       })
