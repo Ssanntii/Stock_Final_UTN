@@ -4,8 +4,9 @@ const API_URL = import.meta.env.VITE_URL
 const handleResponse = async (response) => {
   const data = await response.json()
   
+  // Si el backend devuelve error: true, lanzamos el mensaje de error
   if (data.error) {
-    throw new Error(data.error)
+    throw new Error(data.msg || 'Error en la operación')
   }
   
   return data
@@ -111,7 +112,9 @@ export const loginUser = async (credentials) => {
       },
       body: JSON.stringify(credentials)
     })
-    return await handleResponse(response)
+    const data = await handleResponse(response)
+    // Devolvemos solo el objeto user que viene en la respuesta
+    return data.user
   } catch (error) {
     handleError(error, 'Error al iniciar sesión')
   }
