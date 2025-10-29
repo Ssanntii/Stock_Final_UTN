@@ -1,7 +1,7 @@
 # Proyecto de Programación IV
 ## Gestor de Stock con autenticación de Usuarios.
 
-###Instalación
+### Instalación
 1. En una terminal nueva, clonamos el repositorio
 ```pws
 git clone https://github.com/Ssanntii/Stock_Final_UTN.git
@@ -88,9 +88,10 @@ Headers:
 // No requiere
 ```
 Returns:
-
-OK	200	Lista de productos devuelta exitosamente (array de objetos Producto).
-Error	500	Error interno del servidor al buscar los productos.
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Lista de productos devuelta exitosamente (array de objetos Producto)|
+|Error|500|Error interno del servidor al buscar los productos|
 
 Obtener un producto por ID
 -/ /products/:id - GET Ruta encargada de obtener los detalles de un producto específico por su ID.
@@ -108,9 +109,12 @@ Headers:
 // No requiere
 ```
 
-OK	200	Producto encontrado y devuelto (objeto Producto).
-No Encontrado	404	Producto no encontrado con el ID proporcionado.
-Error	500	Error interno del servidor al buscar el producto.
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Producto encontrado y devuelto (objeto Producto)|
+|No Encontrado|404|Producto no encontrado con el ID proporcionado|
+|Error|500|Error interno del servidor al buscar el producto|
 
 ### ➕ Crear un nuevo producto
 -/ /products/ - POST Ruta encargada de facilitar la creación de un nuevo producto. Requiere autenticación (JWT).
@@ -130,10 +134,12 @@ Error	500	Error interno del servidor al buscar el producto.
 }
 
 Returns:
-OK	200	Producto creado exitosamente (devuelve el objeto del nuevo Producto).
-No Autorizado	401	No autorizado, falta el token ({ error: "No autorizado" }).
-No Autorizado	401	Error al verificar el token (ej. token expirado/inválido).
-No Encontrado	404	Usuario no encontrado (a pesar de tener un token válido).
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Producto creado exitosamente (devuelve el objeto del nuevo Producto)|
+|No Autorizado|401|No autorizado, falta el token ({ error: "No autorizado" })|
+|No Autorizado|401|Error al verificar el token (ej. token expirado/inválido)|
+|No Encontrado|404|Usuario no encontrado (a pesar de tener un token válido)|
 
 ### ✏️ Modificar un producto existente
 -/ /products/:id - PUT Ruta encargada de modificar un producto existente por su ID. Requiere autenticación (JWT).
@@ -162,11 +168,14 @@ Headers:
 }
 ```
 
-OK	200	Producto modificado exitosamente (devuelve el objeto del Producto actualizado).
-No Autorizado	401	No autorizado, falta el token ({ error: "No autorizado" }).
-No Autorizado	401	Error al verificar el token o error de base de datos.
-No Encontrado	404	Usuario no encontrado (a pesar de tener un token válido).
-OK	200	Producto no encontrado con el ID proporcionado (retorna { error: "Producto no encontrado" }).
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Producto modificado exitosamente (devuelve el objeto del Producto actualizado)|
+|No Autorizado|401|No autorizado, falta el token ({ error: "No autorizado" })|
+|No Autorizado|401|Error al verificar el token o error de base de datos|
+|No Encontrado|404|Usuario no encontrado (a pesar de tener un token válido)|
+|OK|200|Producto no encontrado con el ID proporcionado (retorna { error: "Producto no encontrado" })|
 
 ### ❌ Eliminar un producto
 -/ /products/:id - DELETE Ruta encargada de eliminar un producto existente por su ID. Requiere autenticación (JWT).
@@ -186,10 +195,13 @@ Headers:
 }
 ```
 
-OK	200	Producto eliminado exitosamente ({ message: "Producto eliminado" }).
-No Autorizado	401	No autorizado, falta el token ({ error: "No autorizado" }).
-No Autorizado	401	Error al verificar el token.
-OK	200	Producto no encontrado con el ID proporcionado (retorna { error: "Producto no encontrado" }).
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK	200	Producto eliminado exitosamente ({ message: "Producto eliminado" })|
+|No Autorizado|401|No autorizado, falta el token ({ error: "No autorizado" })|
+|No Autorizado|401|Error al verificar el token|
+|OK|200|Producto no encontrado con el ID proporcionado (retorna { error: "Producto no encontrado" })|
 
 ## 👤 Rutas de Usuario (/user)
 ### 👥 Obtener todos los usuarios
@@ -199,8 +211,9 @@ Headers:
 ```ts
 // No requiere
 ```
-
-OK	200	Lista de usuarios devuelta exitosamente (devuelve { error: false, users: [...] }).
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Lista de usuarios devuelta exitosamente (devuelve { error: false, users: [...] })|
 
 ### 📝 Registrar un nuevo usuario
 -/ /user/register - POST Ruta encargada de registrar un nuevo usuario en el sistema.
@@ -220,9 +233,12 @@ Headers:
 // No requiere
 ```
 
-OK	200	Usuario creado exitosamente ({ error: false, msg: "Usuario creado" }).
-Conflicto	403	Las contraseñas no coinciden.
-Error	400	Error de validación o al crear el usuario (ej. email ya existe).
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Usuario creado exitosamente ({ error: false, msg: "Usuario creado" })|
+|Conflicto|403|Las contraseñas no coinciden|
+|Error|400|Error de validación o al crear el usuario (ej. email ya existe)|
 
 ### 🔑 Iniciar sesión (Login)
 -/ /user/login - POST Ruta encargada de autenticar un usuario y generar un token de acceso (JWT).
@@ -242,10 +258,13 @@ Headers:
 // No requiere
 ```
 
-OK	200	Inicio de sesión exitoso, devuelve los datos del usuario y el token.
-No Encontrado	404	El usuario no existe.
-Conflicto	403	Contraseña incorrecta.
-Error	500	Error interno del servidor al iniciar sesión.
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Inicio de sesión exitoso, devuelve los datos del usuario y el token|
+|No Encontrado|404	El usuario no existe|
+|Conflicto|403|Contraseña incorrecta|
+|Error|500|Error interno del servidor al iniciar sesión|
 
 ### ✅ Verificar Token
 -/ /user/verify-token - GET Ruta encargada de verificar la validez de un token JWT.
@@ -257,8 +276,11 @@ Headers:
 }
 ```
 
-OK	200	Token válido (devuelve { error: false }).
-OK	200	Token no válido, expirado o faltante (devuelve { error: true }).
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Token válido (devuelve { error: false })|
+|OK|200|Token no válido, expirado o faltante (devuelve { error: true })|
 
 ## 📜 Rutas de Logs (/logs)
 ### 📖 Obtener Logs de Productos
@@ -266,19 +288,71 @@ OK	200	Token no válido, expirado o faltante (devuelve { error: true }).
 
 Headers:
 ```ts
-// Preguntar al santi
+//No requiere
 ```
 
-OK	200	Lista de logs de productos devueltos (depende del controlador).
-Error	500	Error interno (depende de la implementación en getProductLogs).
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Lista de logs de productos devueltos (depende del controlador)|
+|Error|500|Error al obtener los logs|
 
 ### 👤 Obtener Logs de Usuarios
 -/ /logs/users - GET Ruta encargada de obtener los logs o datos de usuarios (controlada por getUserLogs).
 
 Headers:
 ```ts
-//Ver
+//No requiere
 ```
 
-OK	200	Lista de logs de usuarios devueltos (depende del controlador).
-Error	500	Error interno (depende de la implementación en getUserLogs).
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Lista de logs de usuarios devueltos (depende del controlador)|
+|Error|500|Error al obtener los logs de usuarios|
+
+## 🧭 Rutas del Frontend
+
+> [!NOTE]
+> Este archivo organiza las rutas del frontend y define los puntos de acceso principales de la aplicación, separando rutas públicas, privadas y de error.
+>El archivo `AppRoutes.jsx` define todas las rutas principales de la aplicación, tanto públicas como protegidas, utilizando **React Router**.
+
+---
+
+### 🔹 Rutas Públicas
+
+| Ruta | Componente | Descripción |
+|:------|:------------|:-------------:|
+| `/` | `Home` | Página principal que muestra la lista de productos disponibles. |
+| `/auth` | `Public` (layout) | Contenedor de las rutas relacionadas con autenticación. |
+| `/auth` *(index)* | `Login` | Página de inicio de sesión para usuarios registrados. |
+| `/auth/register` | `Register` | Página para crear una nueva cuenta de usuario. |
+
+---
+
+### 🔒 Rutas Protegidas
+
+Estas rutas requieren que el usuario esté autenticado.  
+El acceso está controlado mediante el componente `ProtectedRoute`.
+
+| Ruta | Componente | Descripción |
+|:---|:---|:---:|
+| `/product` | `ProductForm` | Formulario para **agregar** un nuevo producto. |
+| `/product/:id` | `ProductForm` | Formulario para **editar** un producto existente (usando el parámetro `id`). |
+| `/logs` | `Logs` | Página que muestra registros del sistema (logs), accesible solo por usuarios autorizados. |
+
+---
+
+### ⚠️ Ruta de Error
+
+| Ruta | Componente | Descripción |
+|:---|:---|:---:|
+| `/*` | `NotFoundPage` | Página mostrada cuando la ruta no existe (Error 404). |
+
+---
+
+### 🧩 Resumen del Flujo
+
+1. **Usuarios no autenticados** pueden acceder a las rutas bajo `/auth` (`/auth`, `/auth/register`).  
+2. **Usuarios autenticados** pueden acceder a `/product`, `/product/:id` y `/logs`.  
+3. Cualquier ruta no definida redirige a la **página 404** (`NotFoundPage`).
