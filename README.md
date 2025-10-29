@@ -31,18 +31,20 @@ npm i
 >
 > Estas son las variables de entorno para el back.
 
-3. En la misma terminal o en una nueva deberemos crear la base de datos con los datos ingresados en el .env.
-```pws
-mysql -u tu_usuario -p
-```
-Luego nos pedirá la contraseña, la ingresamos.
+> [!IMPORTANT]
+>3. En la misma terminal o en una nueva deberemos crear la base de datos con los datos ingresados en el .env.
+>```pws
+>mysql -u tu_usuario -p
+>```
+>Luego nos pedirá la contraseña, la ingresamos.
 
-Si se accedió correctamente, deberá ver un mensaje similar al siguiente
-```pgsql
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 36
-Server version: 9.4.0 MySQL Community Server - GPL
-```
+> [!NOTE]
+>Si se accedió correctamente, deberá ver un mensaje similar al siguiente
+>```pgsql
+>Welcome to the MySQL monitor.  Commands end with ; or \g.
+>Your MySQL connection id is 36
+>Server version: 9.4.0 MySQL Community Server - GPL
+>```
 
 Debemos proceder a la creación de la base de datos
 
