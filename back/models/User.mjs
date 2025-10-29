@@ -1,10 +1,7 @@
 import { DataTypes, Model } from 'sequelize'
 import { conn } from "../config/db.mjs"
 
-
-export class User extends Model {
-
-}
+export class User extends Model {}
 
 User.init({
   full_name: {
@@ -38,8 +35,53 @@ User.init({
   },
   activateToken: {
     type: DataTypes.STRING
+  },
+  created_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'users',
+      key: 'id'
+    }
+  },
+  modified_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'users',
+      key: 'id'
+    }
   }
 }, {
   tableName: "users",
-  sequelize: conn
+  sequelize: conn,
+  timestamps: true
 })
+
+// Definir asociaciones como función estática
+User.associate = (models) => {
+  // Productos creados por este usuario
+  User.hasMany(models.Products, {
+    as: 'createdProducts',
+    foreignKey: 'created_by'
+  })
+  
+  // Productos modificados por este usuario
+  User.hasMany(models.Products, {
+    as: 'modifiedProducts',
+    foreignKey: 'modified_by'
+  })
+  
+  // Auto-referencias para usuarios
+  User.belongsTo(models.User, {
+    as: 'creator',
+    foreignKey: 'created_by',
+    constraints: false
+  })
+  
+  User.belongsTo(models.User, {
+    as: 'modifier',
+    foreignKey: 'modified_by',
+    constraints: false
+  })
+}

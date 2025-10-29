@@ -7,6 +7,7 @@ import Home from "../pages/Home"
 import Login from "../pages/Login"
 import Register from "../pages/Register"
 import ProductForm from "../pages/AddEditProduct"
+import Logs from "../pages/Logs"
 import NotFoundPage from "../pages/NotFoundPage"
 
 const AppRoutes = () => {
@@ -35,6 +36,16 @@ const AppRoutes = () => {
                 element={
                     <ProtectedRoute>
                         <ProductForm />
+                    </ProtectedRoute>
+                } 
+            />
+
+            {/* Ruta protegida para ver logs */}
+            <Route 
+                path="/logs" 
+                element={
+                    <ProtectedRoute>
+                        <Logs />
                     </ProtectedRoute>
                 } 
             />

@@ -96,7 +96,7 @@ userRoutes.post("/login", async (req, res) => {
       user: {
         full_name: user.full_name,
         email: user.email,
-        token: `Bearer ${token}`
+        token: token  // ← CAMBIO: Sin "Bearer "
       }
     })
   } catch {

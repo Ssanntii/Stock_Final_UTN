@@ -24,7 +24,7 @@ Products.init(
             }
         },
         price: {
-            type: DataTypes.DECIMAL(10, 2), // 10 dígitos totales, 2 decimales
+            type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
             validate: {
                 isDecimal: {
@@ -39,10 +39,42 @@ Products.init(
             validate: {
                 min: 0
             }
+        },
+        created_by: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
+        },
+        modified_by: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
         }
     },
     {
         sequelize: conn,
-        tableName: "products"
+        tableName: "products",
+        timestamps: true
     }
 )
+
+// Definir asociaciones como función estática
+Products.associate = (models) => {
+    // Producto creado por un usuario
+    Products.belongsTo(models.User, {
+        as: 'creator',
+        foreignKey: 'created_by'
+    })
+    
+    // Producto modificado por un usuario
+    Products.belongsTo(models.User, {
+        as: 'modifier',
+        foreignKey: 'modified_by'
+    })
+}

@@ -1,10 +1,26 @@
 const API_URL = import.meta.env.VITE_URL
 
-
 // ========== HELPERS ==========
+
+// Función helper para obtener el token del store
+const getAuthToken = () => {
+  const token = localStorage.getItem('token')
+  return token ? `Bearer ${token}` : null
+}
 
 // Función helper para manejar respuestas
 const handleResponse = async (response) => {
+  // Verifica primero el status HTTP
+  if (!response.ok) {
+    // Si es HTML (404, 500, etc), maneja el error
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json()
+      throw new Error(data.msg || `Error HTTP ${response.status}`)
+    }
+    throw new Error(`Error HTTP ${response.status}: ${response.statusText}`)
+  }
+  
   const data = await response.json()
   
   // Si el backend devuelve error: true, lanzamos el mensaje de error
@@ -49,6 +65,7 @@ export const createProduct = async (productData) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': getAuthToken()
       },
       body: JSON.stringify(productData)
     })
@@ -65,6 +82,7 @@ export const updateProduct = async (id, productData) => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': getAuthToken()
       },
       body: JSON.stringify(productData)
     })
@@ -78,7 +96,10 @@ export const updateProduct = async (id, productData) => {
 export const deleteProduct = async (id) => {
   try {
     const response = await fetch(`${API_URL}/products/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Authorization': getAuthToken()
+      }
     })
     return await handleResponse(response)
   } catch (error) {
@@ -116,6 +137,12 @@ export const loginUser = async (credentials) => {
       body: JSON.stringify(credentials)
     })
     const data = await handleResponse(response)
+    
+    // ⭐ CAMBIO: Guardar el token en localStorage
+    if (data.user.token) {
+      localStorage.setItem('token', data.user.token)
+    }
+    
     // Devolvemos solo el objeto user que viene en la respuesta
     return data.user
   } catch (error) {
@@ -127,10 +154,10 @@ export const loginUser = async (credentials) => {
 export const verifyToken = async (token) => {
   try {
     const response = await fetch(`${API_URL}/users/verify-token`, {
-      method:  'GET',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': token
+        'Authorization': getAuthToken()
       }
     })
     return await handleResponse(response)
