@@ -240,7 +240,7 @@ Headers:
 Returns:
 |Código|Número|Mensaje|
 |:---:|:---:|:---:|
-|OK	200	Producto eliminado exitosamente ({ message: "Producto eliminado" })|
+|OK|200|Producto eliminado exitosamente ({ message: "Producto eliminado" })|
 |No Autorizado|401|No autorizado, falta el token ({ error: "No autorizado" })|
 |No Autorizado|401|Error al verificar el token|
 |OK|200|Producto no encontrado con el ID proporcionado (retorna { error: "Producto no encontrado" })|
@@ -336,7 +336,7 @@ Headers:
 Returns:
 |Código|Número|Mensaje|
 |:---:|:---:|:---:|
-|OK|200|Lista de logs de productos devueltos (depende del controlador)|
+|OK|200|Lista de logs de productos|
 |Error|500|Error al obtener los logs|
 
 ### 👤 Obtener Logs de Usuarios
@@ -350,7 +350,7 @@ Headers:
 Returns:
 |Código|Número|Mensaje|
 |:---:|:---:|:---:|
-|OK|200|Lista de logs de usuarios devueltos (depende del controlador)|
+|OK|200|Lista de logs de usuarios devueltos|
 |Error|500|Error al obtener los logs de usuarios|
 
 ## 🧭 Rutas del Frontend
