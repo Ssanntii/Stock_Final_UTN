@@ -31,7 +31,47 @@ npm i
 >
 > Estas son las variables de entorno para el back.
 
-3. En la terminal iniciamos el servidor.
+3. En la misma terminal o en una nueva deberemos crear la base de datos con los datos ingresados en el .env.
+```pws
+mysql -u tu_usuario -p
+```
+Luego nos pedirá la contraseña, la ingresamos.
+
+Si se accedió correctamente, deberá ver un mensaje similar al siguiente
+```pgsql
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 36
+Server version: 9.4.0 MySQL Community Server - GPL
+```
+
+Debemos proceder a la creación de la base de datos
+
+```pws
+CREATE DATABASE nombre_db;
+```
+
+Luego podemos verificar su creación
+```pws
+SHOW DATABASES;
+```
+> [!NOTE]
+>Deberá aparecer el nombre de la base nueva
+>```pgsql
+>+--------------------+
+>| Database           |
+>+--------------------+
+>| information_schema |
+>| mysql              |
+>| performance_schema |
+>| nombre_db          |
+>+--------------------+
+>```
+Si se creó correctamente podemos salir de mysql en esa terminal.
+```pws
+EXIT;
+```
+
+4. Parandonos en la ruta principal, accedemos al back y con la terminal iniciamos el servidor.
 ```pws
 cd ../back
 npm run dev
@@ -57,7 +97,7 @@ npm run dev
 > Estas es la variable de entorno para el front.
 > apiurl es el mensaje que nos sale en consola en el backend. Por ejemplo: "http://localhost:3000"
 
-4. Iniciamos una terminal nueva iniciamos el servidor.
+5. Iniciamos una terminal nueva iniciamos el servidor.
 ```pws
 cd front
 npm run dev
@@ -80,7 +120,7 @@ npm run dev
 
 ### 🟢 Obtener todos los productos
 
--/ `/products/` - **GET**
+- `/products/` - **GET**
 Ruta encargada de obtener una lista de **todos los productos** disponibles.
 
 Headers:
@@ -94,7 +134,7 @@ Returns:
 |Error|500|Error interno del servidor al buscar los productos|
 
 Obtener un producto por ID
--/ /products/:id - GET Ruta encargada de obtener los detalles de un producto específico por su ID.
+- `/products/:id` - GET Ruta encargada de obtener los detalles de un producto específico por su ID.
 
 Parámetros de Ruta (req.params):
 
@@ -117,7 +157,7 @@ Returns:
 |Error|500|Error interno del servidor al buscar el producto|
 
 ### ➕ Crear un nuevo producto
--/ /products/ - POST Ruta encargada de facilitar la creación de un nuevo producto. Requiere autenticación (JWT).
+- `/products/` - POST Ruta encargada de facilitar la creación de un nuevo producto. Requiere autenticación (JWT).
 
 - Body (req.body):
 
@@ -142,7 +182,7 @@ Returns:
 |No Encontrado|404|Usuario no encontrado (a pesar de tener un token válido)|
 
 ### ✏️ Modificar un producto existente
--/ /products/:id - PUT Ruta encargada de modificar un producto existente por su ID. Requiere autenticación (JWT).
+- `/products/:id` - PUT Ruta encargada de modificar un producto existente por su ID. Requiere autenticación (JWT).
 
 Parámetros de Ruta (req.params):
 
@@ -178,7 +218,7 @@ Returns:
 |OK|200|Producto no encontrado con el ID proporcionado (retorna { error: "Producto no encontrado" })|
 
 ### ❌ Eliminar un producto
--/ /products/:id - DELETE Ruta encargada de eliminar un producto existente por su ID. Requiere autenticación (JWT).
+- `/products/:id` - DELETE Ruta encargada de eliminar un producto existente por su ID. Requiere autenticación (JWT).
 
 Parámetros de Ruta (req.params):
 
@@ -203,9 +243,9 @@ Returns:
 |No Autorizado|401|Error al verificar el token|
 |OK|200|Producto no encontrado con el ID proporcionado (retorna { error: "Producto no encontrado" })|
 
-## 👤 Rutas de Usuario (/user)
+## 👤 Rutas de Usuario (`/user`)
 ### 👥 Obtener todos los usuarios
--/ /user/ - GET Ruta encargada de obtener una lista de todos los usuarios.
+- `/user/` - GET Ruta encargada de obtener una lista de todos los usuarios.
 
 Headers:
 ```ts
@@ -216,7 +256,7 @@ Headers:
 |OK|200|Lista de usuarios devuelta exitosamente (devuelve { error: false, users: [...] })|
 
 ### 📝 Registrar un nuevo usuario
--/ /user/register - POST Ruta encargada de registrar un nuevo usuario en el sistema.
+- `/user/register` - POST Ruta encargada de registrar un nuevo usuario en el sistema.
 
 Body (req.body):
 ```ts
@@ -241,7 +281,7 @@ Returns:
 |Error|400|Error de validación o al crear el usuario (ej. email ya existe)|
 
 ### 🔑 Iniciar sesión (Login)
--/ /user/login - POST Ruta encargada de autenticar un usuario y generar un token de acceso (JWT).
+- `/user/login` - POST Ruta encargada de autenticar un usuario y generar un token de acceso (JWT).
 
 Body (req.body):
 
@@ -267,7 +307,7 @@ Returns:
 |Error|500|Error interno del servidor al iniciar sesión|
 
 ### ✅ Verificar Token
--/ /user/verify-token - GET Ruta encargada de verificar la validez de un token JWT.
+- `/user/verify-token` - GET Ruta encargada de verificar la validez de un token JWT.
 
 Headers:
 ```ts
@@ -282,9 +322,9 @@ Returns:
 |OK|200|Token válido (devuelve { error: false })|
 |OK|200|Token no válido, expirado o faltante (devuelve { error: true })|
 
-## 📜 Rutas de Logs (/logs)
+## 📜 Rutas de Logs (`/logs`)
 ### 📖 Obtener Logs de Productos
--/ /logs/products - GET Ruta encargada de obtener los logs o datos de productos (controlada por getProductLogs).
+- `/logs/products` - GET Ruta encargada de obtener los logs o datos de productos (controlada por getProductLogs).
 
 Headers:
 ```ts
@@ -298,7 +338,7 @@ Returns:
 |Error|500|Error al obtener los logs|
 
 ### 👤 Obtener Logs de Usuarios
--/ /logs/users - GET Ruta encargada de obtener los logs o datos de usuarios (controlada por getUserLogs).
+- `/logs/users` - GET Ruta encargada de obtener los logs o datos de usuarios (controlada por getUserLogs).
 
 Headers:
 ```ts
@@ -321,33 +361,33 @@ Returns:
 
 ### 🔹 Rutas Públicas
 
-| Ruta | Componente | Descripción |
+|Ruta|Componente|Descripción|
 |:------|:------------|:-------------:|
-| `/` | `Home` | Página principal que muestra la lista de productos disponibles. |
-| `/auth` | `Public` (layout) | Contenedor de las rutas relacionadas con autenticación. |
-| `/auth` *(index)* | `Login` | Página de inicio de sesión para usuarios registrados. |
-| `/auth/register` | `Register` | Página para crear una nueva cuenta de usuario. |
+|`/`|`Home`|Página principal que muestra la lista de productos disponibles|
+|`/auth`|`Public`|Contenedor de las rutas relacionadas con autenticación del usuario|
+|`/auth`|`Login`|Página de inicio de sesión para usuarios registrados|
+|`/auth/register`|`Register`|Página para crear una nueva cuenta de usuario|
 
 ---
 
 ### 🔒 Rutas Protegidas
 
-Estas rutas requieren que el usuario esté autenticado.  
+Estas rutas requieren que el usuario esté autenticado (debe existir cuenta y estar iniciada).  
 El acceso está controlado mediante el componente `ProtectedRoute`.
 
-| Ruta | Componente | Descripción |
+|Ruta|Componente|Descripción|
 |:---|:---|:---:|
-| `/product` | `ProductForm` | Formulario para **agregar** un nuevo producto. |
-| `/product/:id` | `ProductForm` | Formulario para **editar** un producto existente (usando el parámetro `id`). |
-| `/logs` | `Logs` | Página que muestra registros del sistema (logs), accesible solo por usuarios autorizados. |
+|`/product` |`ProductForm`|Formulario para **agregar** un nuevo producto|
+|`/product/:id`|`ProductForm`|Formulario para **editar** un producto existente (se lo busca usando `id`)|
+|`/logs`|`Logs`|Página que los cambios recibidos en la base de datos (como creación/edicion de productos), accesible solo por usuarios autorizados|
 
 ---
 
 ### ⚠️ Ruta de Error
 
-| Ruta | Componente | Descripción |
+|Ruta|Componente|Descripción|
 |:---|:---|:---:|
-| `/*` | `NotFoundPage` | Página mostrada cuando la ruta no existe (Error 404). |
+|`/*`|`NotFoundPage`|Página mostrada cuando la ruta no existe (Error 404)|
 
 ---
 
