@@ -165,7 +165,7 @@ Returns:
 
 ```ts
 {
-  name: 'string', 
+  full_name: 'string', 
   price: 'decimal', 
   stock: 'integer'
 }
@@ -197,7 +197,7 @@ Parámetros de Ruta (req.params):
 Body (req.body):
 ```ts
 {
-  name: 'string', 
+  full_name: 'string', 
   price: 'decimal', 
   stock: 'integer'
 }
@@ -398,3 +398,34 @@ El acceso está controlado mediante el componente `ProtectedRoute`.
 1. **Usuarios no autenticados** pueden acceder a las rutas bajo `/auth` (`/auth`, `/auth/register`).  
 2. **Usuarios autenticados** pueden acceder a `/product`, `/product/:id` y `/logs`.  
 3. Cualquier ruta no definida redirige a la **página 404** (`NotFoundPage`).
+
+# Diagrama de base de datos
+
+```mermaid
+erDiagram
+    USERS {
+        int id PK
+        string full_name
+        string email
+        char(60) hash
+        boolean isActivate
+        string activateToken
+        int created_by FK
+        int modified_by FK
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    PRODUCTS {
+        int id PK
+        string name
+        decimal price
+        int stock
+        int created_by FK
+        int modified_by FK
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    USERS ||--o{ PRODUCTS : "id -> created_by"
+    USERS ||--o{ PRODUCTS : "id -> modified_by"
+```
