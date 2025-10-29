@@ -1,30 +1,76 @@
 # Proyecto 4/11/2025 programación
 ## Proyecto de integración de sistema de login y stock creado en clase
 
-Instalación
-Iniciamos una terminal nueva, clonamos el repositorio
+###Instalación
+1. En una terminal nueva, clonamos el repositorio
 ```pws
 git clone https://github.com/Ssanntii/Stock_Final_UTN.git
 cd Stock_Final_UTN
 ```
-
-Luego instalamos los paquetes para el backend e iniciamos el servidor
+2. Instalamos las dependencias para el backend y frontend.
 ```pws
-cd Stock_Final_UTN
 cd back
 npm i
-node index.mjs
-```
-
-
-En otra terminal instalamos los paquetes del front y lo iniciamos
-```pws
-cd Stock_Final_UTN
-cd front
+cd ../front
 npm i
+```
+> [!WARNING]
+> Debemos asignar nuestras variables de entorno en un archivo ".env".
+>
+>  Copiamos las variables de ".env-example".
+>
+> ```plain
+> USER= tu_usuario
+> PASSWORD= tu_contraseña
+> HOST= localhost o ip
+> PORT= puerto
+> DATABASE= nombre_db
+> DIALECT= mysql, postgresql, mariadb
+> SECRET= tu_key_secreta
+> ```
+>
+> Estas son las variables de entorno para el back.
+
+3. En la terminal iniciamos el servidor.
+```pws
+cd ../back
 npm run dev
 ```
-A partir de aqui podremos entrar al link desde la terminal del front
+> [!NOTE]
+> Deberíamos ver el siguiente mensaje en la consola.
+>
+> ```pws
+> Servidor iniciado en http://localhost:3000
+> ```
+>
+> Este mensaje lo usaremos para asignar nuestra variable de entorno en el front.
+
+> [!WARNING]
+> Debemos asignar nuestras variables de entorno en un archivo ".env".
+>
+>  Copiamos las variables de ".env-example".
+>
+> ```plain
+> VITE_URL="apiurl"
+> ```
+>
+> Estas es la variable de entorno para el front.
+> apiurl es el mensaje que nos sale en consola en el backend. Por ejemplo: "http://localhost:3000"
+
+4. Iniciamos una terminal nueva iniciamos el servidor.
+```pws
+cd front
+npm run dev
+```
+
+- A partir de aqui podremos entrar al link desde la terminal del front.
+```pws
+  VITE v7.1.12  ready in 604 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+```
 
 # Documentación de Rutas Backend (Productos, Usuarios y Logs)
 
