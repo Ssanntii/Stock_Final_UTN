@@ -8,8 +8,9 @@ User.init({
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      isAlpha: {
-        msg: "El nombre no puede contener números o caracteres especiales"
+      is: {
+        args: /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/i,
+        msg: "Ingrese un nombre válido",
       }
     }
   },

@@ -5,14 +5,14 @@ export const useStore = create(persist(
   (set) => ({
     user: {
       email: null,
-      full_name: null,
+      fullName: null,
       token: null
     },
     setUser: (newuser) => set({ user: newuser }),
     logout: () => set({ 
       user: { 
         email: null, 
-        full_name: null, 
+        fullName: null, 
         token: null 
       } 
     }),

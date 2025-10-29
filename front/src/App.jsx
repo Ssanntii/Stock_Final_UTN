@@ -6,7 +6,6 @@ function App() {
   return (
     <BrowserRouter>
       <AppRoutes />
-      <h1>ESTUDIEN</h1>
     </BrowserRouter>
   )
 }
