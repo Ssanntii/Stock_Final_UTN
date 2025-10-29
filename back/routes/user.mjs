@@ -121,8 +121,6 @@ userRoutes.get("/verify-token", async (req, res) => {
 
     const verify = jwt.verify(token, process.env.SECRET)
 
-    console.log(verify) //Quitar al final
-
     if (!verify) {
       res.json({ error: true })
       return

@@ -123,7 +123,7 @@ const Logs = () => {
                                                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-200">Precio</th>
                                                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-200">Stock</th>
                                                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-200">Creado Por</th>
-                                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-200">Fecha</th>
+                                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-200">Creado El</th>
                                                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-200">Modificado Por</th>
                                                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-200">Última Modificación</th>
                                             </tr>

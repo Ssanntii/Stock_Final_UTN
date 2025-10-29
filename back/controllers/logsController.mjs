@@ -1,4 +1,4 @@
-import { Products } from '../models/Products.mjs'
+import { Products } from '../models/Product.mjs'
 import { User } from '../models/User.mjs'
 
 export const getProductLogs = async (req, res) => {

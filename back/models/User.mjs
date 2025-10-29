@@ -10,7 +10,7 @@ User.init({
     validate: {
       is: {
         args: /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/i,
-        msg: "Ingrese un nombre válido",
+        msg: "El nombre no puede contener números ni caracteres especiales"
       }
     }
   },
