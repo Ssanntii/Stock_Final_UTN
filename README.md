@@ -1,5 +1,5 @@
-# Proyecto 4/11/2025 programación
-## Proyecto de integración de sistema de login y stock creado en clase
+# Proyecto de Programación IV
+## Gestor de Stock con autenticación de Usuarios.
 
 ###Instalación
 1. En una terminal nueva, clonamos el repositorio
