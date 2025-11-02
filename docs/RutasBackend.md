@@ -55,6 +55,15 @@ Returns:
 }
 ```
 
+Ejemplo creación de producto:
+```ts
+{
+  full_name: 'Banana', 
+  price: 1030, 
+  stock: 250
+}
+```
+Headers:
 {
   authorization: "Bearer <token>" // Token JWT para autenticación
 }
@@ -84,6 +93,21 @@ Body (req.body):
   full_name: 'string', 
   price: 'decimal', 
   stock: 'integer'
+}
+```
+
+Ejemplo cambio del producto ingresado:
+
+```ts
+//En la ruta
+{
+  id: 1
+}
+//En los campos a rellenar
+{
+  full_name: "Banana", 
+  price: 1030, 
+  stock: 251
 }
 ```
 
@@ -154,6 +178,16 @@ Body (req.body):
 }
 ```
 
+Ejemplo creación de usuario:
+```ts
+{
+    full_name:"Juan",
+    email:"juan@gmail.com",
+    password:"123",
+    confirmPassword:"123"
+}
+```
+
 Headers:
 ```ts
 // No requiere
@@ -175,6 +209,14 @@ Body (req.body):
 {
   email: 'string', 
   password: 'string'
+}
+```
+
+Ejemplo inicio de sesión:
+```ts
+{
+  email:"juan@gmail.com",
+  password:123
 }
 ```
 

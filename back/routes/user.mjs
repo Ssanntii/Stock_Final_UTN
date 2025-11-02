@@ -18,42 +18,40 @@ userRoutes.get("/", async (req, res) => {
 
 // REGISTER
 userRoutes.post("/register", async (req, res) => {
-  const body = req.body
-
   try {
-    const { full_name, email, password, confirmPassword } = body
+    const { full_name, email, password, confirmPassword } = req.body;
+
+    if (!password || typeof password !== "string") {
+      return res.status(400).json({ error: true, msg: "Password inválido" });
+    }
+
     if (password !== confirmPassword) {
-      res.status(403).json({
+      return res.status(403).json({
         error: true,
         msg: "Las contraseñas no coinciden"
-      })
-      return
+      });
     }
-    
-    const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(password, salt)
-    const activateToken = "123"
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+
     const user = new User({
       full_name,
       email,
       hash,
-      activateToken
-    })
+      activateToken: "123"
+    });
 
-    await user.save()
-    res.json({
-      error: false,
-      msg: "Usuario creado"
-    })
+    await user.save();
+    res.json({ error: false, msg: "Usuario creado" });
 
   } catch (err) {
     res.status(400).json({
       error: true,
       msg: err.message
-    })
+    });
   }
-
-})
+});
 
 // LOGIN
 userRoutes.post("/login", async (req, res) => {
