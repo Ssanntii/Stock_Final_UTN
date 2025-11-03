@@ -230,7 +230,7 @@ Returns:
 |Código|Número|Mensaje|
 |:---:|:---:|:---:|
 |OK|200|Inicio de sesión exitoso, devuelve los datos del usuario y el token|
-|No Encontrado|404	El usuario no existe|
+|No Encontrado|404|El usuario no existe|
 |Conflicto|403|Contraseña incorrecta|
 |Error|500|Error interno del servidor al iniciar sesión|
 
