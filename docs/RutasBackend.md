@@ -6,7 +6,7 @@
 
 ### 🟢 Obtener todos los productos
 
-- `/products/` - **GET**
+- `/` - **GET**
 Ruta encargada de obtener una lista de **todos los productos** disponibles.
 
 Headers:
@@ -43,7 +43,7 @@ Returns:
 |Error|500|Error interno del servidor al buscar el producto|
 
 ### ➕ Crear un nuevo producto
-- `/products/` - POST Ruta encargada de facilitar la creación de un nuevo producto. Requiere autenticación (JWT).
+- `/` - POST Ruta encargada de facilitar la creación de un nuevo producto. Requiere autenticación (JWT).
 
 - Body (req.body):
 
@@ -153,9 +153,9 @@ Returns:
 |No Autorizado|401|Error al verificar el token|
 |OK|200|Producto no encontrado con el ID proporcionado (retorna { error: "Producto no encontrado" })|
 
-## 👤 Rutas de Usuario (`/user`)
+## 👤 Rutas de Usuario (`/users`)
 ### 👥 Obtener todos los usuarios
-- `/user/` - GET Ruta encargada de obtener una lista de todos los usuarios.
+- `/` - GET Ruta encargada de obtener una lista de todos los usuarios.
 
 Headers:
 ```ts
@@ -166,7 +166,7 @@ Headers:
 |OK|200|Lista de usuarios devuelta exitosamente (devuelve { error: false, users: [...] })|
 
 ### 📝 Registrar un nuevo usuario
-- `/user/register` - POST Ruta encargada de registrar un nuevo usuario en el sistema.
+- `/users/register` - POST Ruta encargada de registrar un nuevo usuario en el sistema.
 
 Body (req.body):
 ```ts
@@ -201,7 +201,7 @@ Returns:
 |Error|400|Error de validación o al crear el usuario (ej. email ya existe)|
 
 ### 🔑 Iniciar sesión (Login)
-- `/user/login` - POST Ruta encargada de autenticar un usuario y generar un token de acceso (JWT).
+- `/users/login` - POST Ruta encargada de autenticar un usuario y generar un token de acceso (JWT).
 
 Body (req.body):
 
@@ -235,7 +235,7 @@ Returns:
 |Error|500|Error interno del servidor al iniciar sesión|
 
 ### ✅ Verificar Token
-- `/user/verify-token` - GET Ruta encargada de verificar la validez de un token JWT.
+- `/users/verify-token` - GET Ruta encargada de verificar la validez de un token JWT.
 
 Headers:
 ```ts
@@ -250,9 +250,9 @@ Returns:
 |OK|200|Token válido (devuelve { error: false })|
 |OK|200|Token no válido, expirado o faltante (devuelve { error: true })|
 
-## 📜 Rutas de Logs (`/logs`)
+## 📜 Rutas de Logs (`/products/logs`)
 ### 📖 Obtener Logs de Productos
-- `/logs/products` - GET Ruta encargada de obtener los logs o datos de productos (controlada por getProductLogs).
+- `/logs` - GET Ruta encargada de obtener los logs o datos de productos (controlada por getProductLogs).
 
 Headers:
 ```ts
@@ -264,17 +264,3 @@ Returns:
 |:---:|:---:|:---:|
 |OK|200|Lista de logs de productos|
 |Error|500|Error al obtener los logs|
-
-### 👤 Obtener Logs de Usuarios
-- `/logs/users` - GET Ruta encargada de obtener los logs o datos de usuarios (controlada por getUserLogs).
-
-Headers:
-```ts
-//No requiere
-```
-
-Returns:
-|Código|Número|Mensaje|
-|:---:|:---:|:---:|
-|OK|200|Lista de logs de usuarios devueltos|
-|Error|500|Error al obtener los logs de usuarios|
