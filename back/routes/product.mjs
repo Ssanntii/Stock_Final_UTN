@@ -1,11 +1,12 @@
 import { Router } from "express"
 import { Products } from "../models/Product.mjs"
 import { User } from "../models/User.mjs"
+import { getProductLogs } from "../controllers/logsController.mjs"
 import jwt from 'jsonwebtoken'
 
 export const productRoutes = Router()
 
-// Crear Ruta GET para obtener TODOS los productos
+// Ruta GET para obtener TODOS los productos
 productRoutes.get("/", async (req, res) => {
     try {
         const products = await Products.findAll()
@@ -15,7 +16,10 @@ productRoutes.get("/", async (req, res) => {
     }
 })
 
-// Crear Ruta GET para obtener UN producto por ID
+// Ruta LOGS para ver quién creó o modificó productos
+productRoutes.get("/logs", getProductLogs)
+
+// Ruta GET para obtener UN producto por ID
 productRoutes.get("/:id", async (req, res) => {
     try {
         const { id } = req.params
@@ -31,7 +35,7 @@ productRoutes.get("/:id", async (req, res) => {
     }
 })
 
-// Crear Ruta POST para crear producto
+// Ruta POST para crear producto
 productRoutes.post("/", async (req, res) => {
     try {
         // Verificar token
@@ -62,7 +66,7 @@ productRoutes.post("/", async (req, res) => {
     }
 })
 
-// Crear Ruta PUT para modificar producto
+// Ruta PUT para modificar producto
 productRoutes.put("/:id", async (req, res) => {
     try {
         // Verificar token
@@ -96,7 +100,7 @@ productRoutes.put("/:id", async (req, res) => {
     }
 })
 
-// Crear Ruta DELETE para eliminar un producto
+// Ruta DELETE para eliminar un producto
 productRoutes.delete("/:id", async (req, res) => {
     try {
         // Verificar token

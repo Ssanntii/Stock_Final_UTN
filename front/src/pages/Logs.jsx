@@ -1,35 +1,35 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
+
+import { fetchProductLogs } from '../api/apiConfig'
 import { useStore } from '../store/useStore'
+
 import Button from '../components/ui/Button'
+
 import logo from '/stock.png'
 
 const Logs = () => {
-    const { user } = useStore()
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [search, setSearch] = useState('')
 
-    useEffect(() => {
-        const fetchProducts = async () => {
+    const loadLogs = async () => {
             try {
-                const res = await fetch('http://localhost:3000/api/logs/products', {
-                    headers: { 'Authorization': `Bearer ${user.token}` }
-                })
-                
-                if (!res.ok) throw new Error('Error al cargar productos')
-                
-                const data = await res.json()
-                setProducts(data)
-            } catch (err) {
-                setError(err.message)
-            } finally {
-                setLoading(false)
-            }
+                  setLoading(true)
+                  setError(null)
+                  
+                  const data = await fetchProductLogs()
+                  setProducts(data)
+                } catch (err) {
+                  setError(err.message)
+                } finally {
+                  setLoading(false)
+                }
         }
-        
-        fetchProducts()
+
+    useEffect(() => {
+        loadLogs()
     }, [])
 
     const formatDate = (date) => {

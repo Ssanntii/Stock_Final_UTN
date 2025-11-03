@@ -36,22 +36,6 @@ User.init({
   },
   activateToken: {
     type: DataTypes.STRING
-  },
-  created_by: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'users',
-      key: 'id'
-    }
-  },
-  modified_by: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'users',
-      key: 'id'
-    }
   }
 }, {
   tableName: "users",
@@ -71,18 +55,5 @@ User.associate = (models) => {
   User.hasMany(models.Products, {
     as: 'modifiedProducts',
     foreignKey: 'modified_by'
-  })
-  
-  // Auto-referencias para usuarios
-  User.belongsTo(models.User, {
-    as: 'creator',
-    foreignKey: 'created_by',
-    constraints: false
-  })
-  
-  User.belongsTo(models.User, {
-    as: 'modifier',
-    foreignKey: 'modified_by',
-    constraints: false
   })
 }

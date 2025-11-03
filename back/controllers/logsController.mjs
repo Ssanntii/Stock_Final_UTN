@@ -59,31 +59,3 @@ export const getProductLogs = async (req, res) => {
         })
     }
 }
-
-export const getUserLogs = async (req, res) => {
-    try {
-        const users = await User.findAll({
-            attributes: ['id', 'full_name', 'email', 'isActivate', 'createdAt', 'updatedAt'],
-            order: [['updatedAt', 'DESC']]
-        })
-
-        const logs = users.map(user => ({
-            id: user.id,
-            name: user.full_name,
-            email: user.email,
-            isActivate: user.isActivate,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-            createdBy: null,
-            modifiedBy: null
-        }))
-
-        res.json(logs)
-    } catch (error) {
-        console.error('Error en getUserLogs:', error)
-        res.status(500).json({ 
-            message: 'Error al obtener los logs de usuarios',
-            error: error.message
-        })
-    }
-}

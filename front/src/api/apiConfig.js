@@ -151,7 +151,7 @@ export const loginUser = async (credentials) => {
 }
 
 // Verificar token
-export const verifyToken = async (token) => {
+export const verifyToken = async () => {
   try {
     const response = await fetch(`${API_URL}/users/verify-token`, {
       method: 'GET',
@@ -163,5 +163,23 @@ export const verifyToken = async (token) => {
     return await handleResponse(response)
   } catch (error) {
     handleError(error, 'Error al verificar el usuario')
+  }
+}
+
+// ========== LOGS ==========
+
+// Obtener logs de productos
+export const fetchProductLogs = async () => {
+  try{
+    const response = await fetch(`${API_URL}/products/logs`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': getAuthToken()
+      }
+    })
+    return await handleResponse(response)
+  } catch (error) {
+    handleError(error, 'Error al obtener los logs de productos')
   }
 }

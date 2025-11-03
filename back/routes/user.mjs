@@ -5,24 +5,13 @@ import jwt from 'jsonwebtoken'
 
 export const userRoutes = Router()
 
-userRoutes.get("/", async (req, res) => {
-
-  const users = await User.findAll()
-
-  res.json({
-    error: false,
-    users
-  })
-
-})
-
-// REGISTER
+// Ruta REGISTER
 userRoutes.post("/register", async (req, res) => {
   try {
     const { full_name, email, password, confirmPassword } = req.body;
 
     if (!password || typeof password !== "string") {
-      return res.status(400).json({ error: true, msg: "Password inválido" });
+      return res.status(400).json({ error: true, msg: "Contraseña inválida" });
     }
 
     if (password !== confirmPassword) {
@@ -53,7 +42,7 @@ userRoutes.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN
+// Ruta LOGIN
 userRoutes.post("/login", async (req, res) => {
   try {
     const body = req.body
@@ -105,6 +94,7 @@ userRoutes.post("/login", async (req, res) => {
   }
 })
 
+// Ruta para verificar token
 userRoutes.get("/verify-token", async (req, res) => {
   try{
     const headers = req.headers
@@ -112,7 +102,10 @@ userRoutes.get("/verify-token", async (req, res) => {
     // Bearer token
 
     if(auth === "") {
-      res.json({ error: true })
+      res.json({ 
+        error: true,
+        msg: "No se proporcionó token"
+       })
       return
     }
     const token = auth.split(" ")[1]
@@ -120,7 +113,10 @@ userRoutes.get("/verify-token", async (req, res) => {
     const verify = jwt.verify(token, process.env.SECRET)
 
     if (!verify) {
-      res.json({ error: true })
+      res.json({ 
+        error: true,
+        msg: "Token inválido"
+      })
       return
     }
 

@@ -7,7 +7,6 @@ import cors from "cors"
 import { conn } from "./config/db.mjs"
 import { productRoutes } from "./routes/product.mjs"
 import { userRoutes } from "./routes/user.mjs"
-import logsRoutes from "./routes/logs.mjs"
 
 // Crear servidor Express
 const app = express()
@@ -19,7 +18,6 @@ app.use(cors())
 // Agregar a express el soporte para JSON
 app.use(express.json())
 
-app.use("/api/logs", logsRoutes)
 app.use("/products", productRoutes)
 app.use("/users", userRoutes)
 
