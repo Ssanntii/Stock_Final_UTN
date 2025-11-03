@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { Mail, Lock, User, UserPlus, ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 import { registerUser } from '../api/apiConfig'
 
+import { Mail, Lock, User, UserPlus, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import logo from '/stock.png'
 
 const Legend = () => {

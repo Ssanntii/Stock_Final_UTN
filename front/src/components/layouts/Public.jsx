@@ -1,5 +1,5 @@
-import { Outlet, useNavigate } from 'react-router'
 import { useEffect } from 'react'
+import { Outlet, useNavigate } from 'react-router'
 
 import { verifyToken } from '../../api/apiConfig'
 import { useStore } from '../../store/useStore'

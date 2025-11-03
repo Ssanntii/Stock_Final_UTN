@@ -1,14 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { Mail, Lock, LogIn, ArrowLeft } from 'lucide-react'
-
-import { Form } from '../components/Form'
-import Input from '../components/ui/Input'
-import Button from '../components/ui/Button'
 
 import { loginUser } from '../api/apiConfig'
 import { useStore } from '../store/useStore'
 
+import { Mail, Lock, LogIn, ArrowLeft } from 'lucide-react'
 import logo from '/stock.png'
 
 const Legend = () => {

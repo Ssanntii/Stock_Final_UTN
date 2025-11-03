@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router'
+
 import { useStore } from '../store/useStore'
 
 const ProtectedRoute = ({ children }) => {

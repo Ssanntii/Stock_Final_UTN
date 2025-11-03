@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+
 import ProductRow from './ProductRow'
 
 const ProductList = ({ products, onDeleteProduct, isAuthenticated }) => {

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 
 import { fetchProductLogs } from '../api/apiConfig'
-import { useStore } from '../store/useStore'
 
 import Button from '../components/ui/Button'
 

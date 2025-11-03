@@ -10,7 +10,6 @@ import Button from '../components/ui/Button'
 import logo from '/stock.png'
 
 const Home = () => {
-  const navigate = useNavigate()
   const { user, logout } = useStore()
   const isAuthenticated = user.token !== null && user.email !== null
 
