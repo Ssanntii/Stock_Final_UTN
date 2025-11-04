@@ -1,5 +1,5 @@
 # Proyecto de Programación IV
-### Gestor de Stock con autenticación de Usuarios.
+## Gestor de Stock con autenticación de Usuarios.
 **Documentación Oficial** con todo lo necesario para utilizar el gestor de stock en su sistema.
 
 - [Instalación](https://github.com/Ssanntii/Stock_Final_UTN/blob/main/docs/Instalación.md).
