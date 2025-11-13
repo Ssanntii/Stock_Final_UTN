@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
-
 import { fetchProductLogs } from '../api/apiConfig'
-
 import Button from '../components/ui/Button'
-
 import logo from '/stock.png'
 
 const Logs = () => {

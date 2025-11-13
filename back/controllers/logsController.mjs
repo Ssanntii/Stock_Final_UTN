@@ -51,6 +51,7 @@ export const getProductLogs = async (req, res) => {
         }))
 
         res.json(logs)
+        
     } catch (error) {
         console.error('Error en getProductLogs:', error)
         res.status(500).json({ 

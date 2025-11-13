@@ -4,8 +4,17 @@ const API_URL = import.meta.env.VITE_URL
 
 // Función helper para obtener el token del store
 const getAuthToken = () => {
-  const token = localStorage.getItem('token')
-  return token ? `Bearer ${token}` : null
+  // CAMBIO: Obtener el token desde Zustand store en lugar de localStorage directo
+  const stored = localStorage.getItem('token_login_web')
+  if (!stored) return null
+  
+  try {
+    const parsed = JSON.parse(stored)
+    const token = parsed?.state?.user?.token
+    return token ? `Bearer ${token}` : null
+  } catch (error) {
+    return null
+  }
 }
 
 // Función helper para manejar respuestas
@@ -138,10 +147,9 @@ export const loginUser = async (credentials) => {
     })
     const data = await handleResponse(response)
     
-    // ⭐ CAMBIO: Guardar el token en localStorage
-    if (data.user.token) {
-      localStorage.setItem('token', data.user.token)
-    }
+    // ✅ ELIMINADO: Ya no guardamos el token aquí
+    // El token se guarda automáticamente en Zustand con persist
+    // localStorage.setItem('token', data.user.token) ← LÍNEA ELIMINADA
     
     // Devolvemos solo el objeto user que viene en la respuesta
     return data.user
