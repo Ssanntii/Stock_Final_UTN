@@ -7,6 +7,8 @@ import cors from "cors"
 import { conn } from "./config/db.mjs"
 import { productRoutes } from "./routes/product.mjs"
 import { userRoutes } from "./routes/user.mjs"
+import { User } from "./models/User.mjs"
+import { Products } from "./models/Product.mjs"
 
 // Crear servidor Express
 const app = express()
@@ -21,13 +23,21 @@ app.use(express.json())
 app.use("/products", productRoutes)
 app.use("/users", userRoutes)
 
-// Iniciar servidor express
+// Configurar asociaciones de Sequelize
+const models = { User, Products }
+Object.values(models).forEach(model => {
+  if (model.associate) {
+    model.associate(models)
+  }
+})
 
+// Iniciar servidor express
 app.listen(PORT, () => {
     try{
         console.log(`Servidor iniciado en http://localhost:${PORT}`)
         // Dentro de la función hay que agregar sequelize.sync()
         conn.sync()
+        console.log('✅ Asociaciones de Sequelize configuradas correctamente')
     } catch (error) {
         console.error("No se pudo iniciar el servidor: ", error.message)
     }

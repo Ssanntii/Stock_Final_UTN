@@ -3,51 +3,41 @@ import { User } from '../models/User.mjs'
 
 export const getProductLogs = async (req, res) => {
     try {
+        // ✅ UNA SOLA QUERY con includes - Sin N+1
         const products = await Products.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'creator',
+                    attributes: ['id', 'full_name', 'email']
+                },
+                {
+                    model: User,
+                    as: 'modifier',
+                    attributes: ['id', 'full_name', 'email']
+                }
+            ],
             order: [['updatedAt', 'DESC']]
         })
 
-        // Obtener los usuarios manualmente
-        const logs = await Promise.all(products.map(async (product) => {
-            let creator = null
-            let modifier = null
-
-            if (product.created_by) {
-                const creatorUser = await User.findByPk(product.created_by, {
-                    attributes: ['id', 'full_name', 'email']
-                })
-                if (creatorUser) {
-                    creator = {
-                        id: creatorUser.id,
-                        name: creatorUser.full_name,
-                        email: creatorUser.email
-                    }
-                }
-            }
-
-            if (product.modified_by) {
-                const modifierUser = await User.findByPk(product.modified_by, {
-                    attributes: ['id', 'full_name', 'email']
-                })
-                if (modifierUser) {
-                    modifier = {
-                        id: modifierUser.id,
-                        name: modifierUser.full_name,
-                        email: modifierUser.email
-                    }
-                }
-            }
-
-            return {
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                stock: product.stock,
-                createdAt: product.createdAt,
-                updatedAt: product.updatedAt,
-                createdBy: creator,
-                modifiedBy: modifier
-            }
+        // Mapear los resultados al formato deseado
+        const logs = products.map(product => ({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            stock: product.stock,
+            createdAt: product.createdAt,
+            updatedAt: product.updatedAt,
+            createdBy: product.creator ? {
+                id: product.creator.id,
+                name: product.creator.full_name,
+                email: product.creator.email
+            } : null,
+            modifiedBy: product.modifier ? {
+                id: product.modifier.id,
+                name: product.modifier.full_name,
+                email: product.modifier.email
+            } : null
         }))
 
         res.json(logs)
@@ -55,8 +45,9 @@ export const getProductLogs = async (req, res) => {
     } catch (error) {
         console.error('Error en getProductLogs:', error)
         res.status(500).json({ 
+            error: true,
             message: 'Error al obtener los logs',
-            error: error.message
+            details: error.message
         })
     }
 }
