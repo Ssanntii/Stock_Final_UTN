@@ -1,6 +1,5 @@
 import { Router } from "express"
-import { Products } from "../models/Product.mjs"
-import { User } from "../models/User.mjs"
+import { Products, User } from "../models/associations.mjs" 
 import { getProductLogs } from "../controllers/logsController.mjs"
 import jwt from 'jsonwebtoken'
 
