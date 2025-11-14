@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { Products } from "../models/Product.mjs"
+import { Products, User } from "../models/associations.mjs" 
 import { getProductLogs } from "../controllers/logsController.mjs"
 import { authenticateToken } from "../middleware/auth.mjs"
 import { validateProduct, validateId } from "../middleware/validation.mjs"

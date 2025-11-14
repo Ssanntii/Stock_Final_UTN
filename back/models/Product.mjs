@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize"
 import { conn } from "../config/db.mjs"
+import { User } from "./User.mjs" // Importar el modelo User
 
 export class Products extends Model {}
 
@@ -63,18 +64,3 @@ Products.init(
         timestamps: true
     }
 )
-
-// Definir asociaciones como función estática
-Products.associate = (models) => {
-    // Producto creado por un usuario
-    Products.belongsTo(models.User, {
-        as: 'creator',
-        foreignKey: 'created_by'
-    })
-    
-    // Producto modificado por un usuario
-    Products.belongsTo(models.User, {
-        as: 'modifier',
-        foreignKey: 'modified_by'
-    })
-}

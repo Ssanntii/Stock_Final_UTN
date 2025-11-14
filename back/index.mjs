@@ -10,6 +10,9 @@ import { userRoutes } from "./routes/user.mjs"
 import { User } from "./models/User.mjs"
 import { Products } from "./models/Product.mjs"
 
+// IMPORTANTE: Importar associations para que se carguen las relaciones
+import "./models/associations.mjs"
+
 // Crear servidor Express
 const app = express()
 const PORT = process.argv[2] ?? 3000

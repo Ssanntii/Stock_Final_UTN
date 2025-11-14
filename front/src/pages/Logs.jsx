@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 import { fetchProductLogs } from '../api/apiConfig'
 import Button from '../components/ui/Button'
+import ExportButtons from '../components/ExportButtons'
 import logo from '/stock.png'
 
 const Logs = () => {
@@ -11,18 +12,18 @@ const Logs = () => {
     const [search, setSearch] = useState('')
 
     const loadLogs = async () => {
-            try {
-                  setLoading(true)
-                  setError(null)
-                  
-                  const data = await fetchProductLogs()
-                  setProducts(data)
-                } catch (err) {
-                  setError(err.message)
-                } finally {
-                  setLoading(false)
-                }
+        try {
+            setLoading(true)
+            setError(null)
+            
+            const data = await fetchProductLogs()
+            setProducts(data)
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setLoading(false)
         }
+    }
 
     useEffect(() => {
         loadLogs()
@@ -88,20 +89,24 @@ const Logs = () => {
                     </div>
                 ) : (
                     <>
-                        {/* Buscador */}
-                        <div className="mb-6">
-                            <input
-                                type="text"
-                                placeholder="Buscar por usuario..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="w-full max-w-md px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            {search && (
-                                <p className="mt-2 text-sm text-slate-300">
-                                    Mostrando {filteredProducts.length} de {products.length} productos
-                                </p>
-                            )}
+                        {/* Barra de acciones: Buscador y Botones de exportación */}
+                        <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                            <div className="flex-1 w-full sm:w-auto">
+                                <input
+                                    type="text"
+                                    placeholder="Buscar por usuario..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="w-full max-w-md px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                {search && (
+                                    <p className="mt-2 text-sm text-slate-300">
+                                        Mostrando {filteredProducts.length} de {products.length} productos
+                                    </p>
+                                )}
+                            </div>
+                            
+                            <ExportButtons data={filteredProducts} disabled={loading} />
                         </div>
 
                         {/* Tabla */}

@@ -1,5 +1,4 @@
-import { Products } from '../models/Product.mjs'
-import { User } from '../models/User.mjs'
+import { Products, User } from '../models/associations.mjs' // Importar desde associations
 
 export const getProductLogs = async (req, res) => {
     try {
@@ -9,18 +8,19 @@ export const getProductLogs = async (req, res) => {
                 {
                     model: User,
                     as: 'creator',
-                    attributes: ['id', 'full_name', 'email']
+                    attributes: ['id', 'full_name', 'email'],
+                    required: false
                 },
                 {
                     model: User,
                     as: 'modifier',
-                    attributes: ['id', 'full_name', 'email']
+                    attributes: ['id', 'full_name', 'email'],
+                    required: false
                 }
             ],
             order: [['updatedAt', 'DESC']]
         })
 
-        // Mapear los resultados al formato deseado
         const logs = products.map(product => ({
             id: product.id,
             name: product.name,

@@ -43,17 +43,4 @@ User.init({
   timestamps: true
 })
 
-// Definir asociaciones como función estática
-User.associate = (models) => {
-  // Productos creados por este usuario
-  User.hasMany(models.Products, {
-    as: 'createdProducts',
-    foreignKey: 'created_by'
-  })
-  
-  // Productos modificados por este usuario
-  User.hasMany(models.Products, {
-    as: 'modifiedProducts',
-    foreignKey: 'modified_by'
-  })
-}
+// ELIMINAR COMPLETAMENTE el bloque User.associate
