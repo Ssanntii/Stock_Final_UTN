@@ -21,7 +21,7 @@ const Public = () => {
           } else {
             // Si el token es inválido, limpiar el usuario
             setUser({
-              full_name: null,
+              full_name: null,  // ✅ Estandarizado
               email: null,
               token: null
             })
@@ -30,7 +30,7 @@ const Public = () => {
           console.log('Error verificando token:', error)
           // En caso de error, limpiar el usuario
           setUser({
-            full_name: null,
+            full_name: null,  // ✅ Estandarizado
             email: null,
             token: null
           })

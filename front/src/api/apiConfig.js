@@ -4,7 +4,6 @@ const API_URL = import.meta.env.VITE_URL
 
 // Función helper para obtener el token del store
 const getAuthToken = () => {
-  // CAMBIO: Obtener el token desde Zustand store en lugar de localStorage directo
   const stored = localStorage.getItem('token_login_web')
   if (!stored) return null
   
@@ -17,24 +16,25 @@ const getAuthToken = () => {
   }
 }
 
-// Función helper para manejar respuestas
+// Función helper para manejar respuestas - MEJORADO
 const handleResponse = async (response) => {
-  // Verifica primero el status HTTP
-  if (!response.ok) {
-    // Si es HTML (404, 500, etc), maneja el error
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
-      const data = await response.json()
-      throw new Error(data.msg || `Error HTTP ${response.status}`)
-    }
+  const contentType = response.headers.get("content-type")
+  
+  // Si no es JSON, error genérico
+  if (!contentType?.includes("application/json")) {
     throw new Error(`Error HTTP ${response.status}: ${response.statusText}`)
   }
   
   const data = await response.json()
   
-  // Si el backend devuelve error: true, lanzamos el mensaje de error
-  if (data.error) {
-    throw new Error(data.msg || 'Error en la operación')
+  // Si hay error en la respuesta O status no OK
+  if (data.error || !response.ok) {
+    // Si hay múltiples errores (del middleware de validación)
+    if (data.errors && Array.isArray(data.errors)) {
+      throw new Error(data.errors.join(', '))
+    }
+    // Si hay un solo mensaje de error
+    throw new Error(data.msg || data.message || data.error || `Error ${response.status}`)
   }
   
   return data
@@ -146,10 +146,6 @@ export const loginUser = async (credentials) => {
       body: JSON.stringify(credentials)
     })
     const data = await handleResponse(response)
-    
-    // ✅ ELIMINADO: Ya no guardamos el token aquí
-    // El token se guarda automáticamente en Zustand con persist
-    // localStorage.setItem('token', data.user.token) ← LÍNEA ELIMINADA
     
     // Devolvemos solo el objeto user que viene en la respuesta
     return data.user

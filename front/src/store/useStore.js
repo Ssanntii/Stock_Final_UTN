@@ -5,16 +5,16 @@ export const useStore = create(persist(
   (set, get) => ({
     user: {
       email: null,
-      fullName: null,
+      full_name: null,  // ✅ Estandarizado a full_name
       token: null
     },
-    setUser: (newuser) => set({ user: newuser }),
+    setUser: (newUser) => set({ user: newUser }),
     logout: () => {
       // Resetear el estado
       set({ 
         user: { 
           email: null, 
-          fullName: null, 
+          full_name: null,  // ✅ Estandarizado a full_name
           token: null 
         } 
       })

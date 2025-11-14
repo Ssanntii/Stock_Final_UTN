@@ -2,6 +2,7 @@ import { Products, User } from '../models/associations.mjs' // Importar desde as
 
 export const getProductLogs = async (req, res) => {
     try {
+        // ✅ UNA SOLA QUERY con includes - Sin N+1
         const products = await Products.findAll({
             include: [
                 {
@@ -44,8 +45,9 @@ export const getProductLogs = async (req, res) => {
     } catch (error) {
         console.error('Error en getProductLogs:', error)
         res.status(500).json({ 
+            error: true,
             message: 'Error al obtener los logs',
-            error: error.message
+            details: error.message
         })
     }
 }

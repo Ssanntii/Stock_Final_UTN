@@ -2,78 +2,85 @@ import { Router } from "express"
 import { User } from '../models/User.mjs'
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
+import { validateUserRegister, validateUserLogin } from '../middleware/validation.mjs'
+import { authenticateToken } from '../middleware/auth.mjs'
 
 export const userRoutes = Router()
 
-// Ruta REGISTER
-userRoutes.post("/register", async (req, res) => {
+// Ruta REGISTER (con validaciones)
+userRoutes.post("/register", validateUserRegister, async (req, res) => {
   try {
-    const { full_name, email, password, confirmPassword } = req.body;
+    const { full_name, email, password } = req.body
 
-    if (!password || typeof password !== "string") {
-      return res.status(400).json({ error: true, msg: "Contraseña inválida" });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(403).json({
+    // Verificar si el usuario ya existe
+    const existingUser = await User.findOne({ where: { email } })
+    if (existingUser) {
+      return res.status(409).json({
         error: true,
-        msg: "Las contraseñas no coinciden"
-      });
+        msg: "Ya existe un usuario registrado con ese email"
+      })
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
+    // Hash de la contraseña
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(password, salt)
 
+    // Crear usuario
     const user = new User({
-      full_name,
-      email,
+      full_name: full_name.trim(),
+      email: email.toLowerCase().trim(),
       hash,
       activateToken: "123"
-    });
+    })
 
-    await user.save();
-    res.json({ error: false, msg: "Usuario creado" });
+    await user.save()
+    
+    res.json({ 
+      error: false, 
+      msg: "Usuario creado exitosamente" 
+    })
 
   } catch (err) {
+    console.error('Error en registro:', err)
     res.status(400).json({
       error: true,
       msg: err.message
-    });
+    })
   }
-});
+})
 
-// Ruta LOGIN
-userRoutes.post("/login", async (req, res) => {
+// Ruta LOGIN (con validaciones)
+userRoutes.post("/login", validateUserLogin, async (req, res) => {
   try {
-    const body = req.body
-    const { email, password } = body
+    const { email, password } = req.body
 
+    // Buscar usuario
     const user = await User.findOne({
       where: {
-        email: email
+        email: email.toLowerCase().trim()
       }
     })
 
     if (!user) {
-      res.status(404).json({
+      return res.status(404).json({
         error: true,
         msg: "El usuario no existe"
       })
-      return
     }
 
+    // Verificar contraseña
     const checkPasswd = await bcrypt.compare(password, user.hash)
 
     if (!checkPasswd) {
-      res.status(403).json({
+      return res.status(403).json({
         error: true,
         msg: "Contraseña incorrecta"
       })
-      return
     }
 
+    // Crear token
     const payload = {
-      email: email
+      email: user.email
     }
 
     const token = jwt.sign(payload, process.env.SECRET)
@@ -83,47 +90,36 @@ userRoutes.post("/login", async (req, res) => {
       user: {
         full_name: user.full_name,
         email: user.email,
-        token: token  // ← CAMBIO: Sin "Bearer "
+        token: token
       }
     })
-  } catch {
+  } catch (err) {
+    console.error('Error en login:', err)
     res.status(500).json({
       error: true,
-      msg: "Hubo un error al iniciar sesion"
+      msg: "Hubo un error al iniciar sesión"
     })
   }
 })
 
-// Ruta para verificar token
-userRoutes.get("/verify-token", async (req, res) => {
-  try{
-    const headers = req.headers
-    const auth = headers.authorization
-    // Bearer token
-
-    if(auth === "") {
-      res.json({ 
-        error: true,
-        msg: "No se proporcionó token"
-       })
-      return
-    }
-    const token = auth.split(" ")[1]
-
-    const verify = jwt.verify(token, process.env.SECRET)
-
-    if (!verify) {
-      res.json({ 
-        error: true,
-        msg: "Token inválido"
-      })
-      return
-    }
-
+// Ruta para verificar token (protegida)
+userRoutes.get("/verify-token", authenticateToken, async (req, res) => {
+  try {
+    // Si llegamos aquí, el token es válido (gracias al middleware)
     res.json({
-      error: false
+      error: false,
+      msg: "Token válido",
+      user: {
+        id: req.user.id,
+        full_name: req.user.full_name,
+        email: req.user.email
+      }
     })
-  } catch {
-    res.json({ error : true})
+  } catch (err) {
+    console.error('Error en verificación:', err)
+    res.status(500).json({ 
+      error: true,
+      msg: "Error al verificar token"
+    })
   }
 })

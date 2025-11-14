@@ -13,13 +13,11 @@ const ProductForm = () => {
   const navigate = useNavigate()
   const isEditing = Boolean(id)
 
-  // Estados del formulario
+  // Estados del formulario - SOLO campos que existen en el backend
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     price: '',
-    stock: '',
-    category: ''
+    stock: ''
   })
   
   // Estados de la UI
@@ -32,7 +30,7 @@ const ProductForm = () => {
     if (isEditing) {
       loadProduct()
     }
-  }, [id])
+  }, [id, isEditing])
 
   const loadProduct = async () => {
     try {
@@ -42,10 +40,8 @@ const ProductForm = () => {
       const product = await fetchProductById(id)
       setFormData({
         name: product.name || '',
-        description: product.description || '',
         price: product.price?.toString() || '',
-        stock: product.stock?.toString() || '',
-        category: product.category || ''
+        stock: product.stock?.toString() || ''
       })
     } catch (err) {
       setError(err.message)
@@ -54,13 +50,14 @@ const ProductForm = () => {
     }
   }
 
-  // Manejar cambios en inputs
+  // Manejar cambios en inputs - CORREGIDO
   const handleChange = (e) => {
     const { name, value } = e.target
     
     let processedValue = value
-    if (name === 'price' && typeof value === 'string') {
-      // Reemplazar todas las comas por puntos y limpiar caracteres extra
+    
+    // Procesar precio: reemplazar comas por puntos
+    if (name === 'price') {
       processedValue = value
         .replace(/,/g, '.') // Reemplazar todas las comas
         .replace(/[^0-9.]/g, '') // Solo permitir números y puntos
@@ -73,7 +70,7 @@ const ProductForm = () => {
     }))
   }
 
-  // Validar formulario
+  // Validar formulario - SIMPLIFICADO
   const validateForm = () => {
     const errors = []
     
@@ -81,21 +78,20 @@ const ProductForm = () => {
       errors.push('El nombre es obligatorio')
     }
     
-    if (!formData.price || parseFloat(formData.price) <= 0) {
+    const priceNum = parseFloat(formData.price)
+    if (isNaN(priceNum) || priceNum <= 0) {
       errors.push('El precio debe ser mayor a 0')
     }
     
-    // Validación más robusta del stock
-    if (formData.stock !== '' && formData.stock !== undefined) {
-      const stockNum = parseInt(formData.stock)
-      if (isNaN(stockNum) || stockNum < 0) {
-        errors.push('El stock debe ser 0 o un número positivo')
-      }
+    const stockNum = parseInt(formData.stock) || 0
+    if (stockNum < 0) {
+      errors.push('El stock no puede ser negativo')
     }
+    
     return errors
   }
 
-  // Enviar formulario
+  // Enviar formulario - SIMPLIFICADO
   const handleSubmit = async (e) => {
     e.preventDefault()
     
@@ -109,15 +105,10 @@ const ProductForm = () => {
     setError(null)
 
     try {
-      // Asegurar valores correctos ANTES de enviar al backend
-      const stockValue = formData.stock === '' || formData.stock === null || formData.stock === undefined 
-        ? 0 
-        : parseInt(formData.stock)
-      
       const productData = {
         name: formData.name.trim(),
         price: parseFloat(formData.price),
-        stock: isNaN(stockValue) || stockValue < 0 ? 0 : stockValue
+        stock: parseInt(formData.stock) || 0
       }
 
       if (isEditing) {
@@ -153,7 +144,7 @@ const ProductForm = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={logo} alt='logo' className="w-12 h-12 flex-shrink-0" />
+              <img src={logo} alt='logo' className="w-12 h-12 shrink-0" />
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-white">
                   {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
@@ -204,7 +195,7 @@ const ProductForm = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Nombre del producto..."
+                placeholder="Ej: Laptop HP"
                 required
                 disabled={submitting}
               />
@@ -212,25 +203,22 @@ const ProductForm = () => {
 
             {/* Precio y Stock */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Precio - SIN DUPLICACIÓN DEL $ */}
               <div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">$</span>
-                  <Input
-                    label="Precio"
-                    name="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={handleChange}
-                    step="0.01"
-                    min="0"
-                    prefix="$"
-                    placeholder="0,00"
-                    required
-                    disabled={submitting}
-                  />
-                </div>
+                <Input
+                  label="Precio"
+                  name="price"
+                  type="text"
+                  value={formData.price}
+                  onChange={handleChange}
+                  prefix="$"
+                  placeholder="0.00"
+                  required
+                  disabled={submitting}
+                />
               </div>
 
+              {/* Stock */}
               <div>
                 <label htmlFor="stock" className="block text-sm font-medium text-slate-300 mb-2">
                   Stock
@@ -256,6 +244,7 @@ const ProductForm = () => {
                 variant="primary" 
                 size="lg" 
                 loading={submitting}
+                disabled={submitting}
               >
                 {submitting ? (
                   <>
