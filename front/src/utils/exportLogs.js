@@ -1,5 +1,20 @@
 import * as XLSX from 'xlsx'
 
+const autoFitColumns = (data, worksheet) => {
+    const cols = Object.keys(data[0])
+
+    const columnWidths = cols.map(col => {
+        const maxLength = data.reduce((max, row) => {
+            const value = row[col] ? row[col].toString() : ""
+            return Math.max(max, value.length)
+        }, col.length) // incluye el nombre de la columna
+
+        return { wch: maxLength + 2 } // +2 para un poco de espacio
+    })
+
+    worksheet['!cols'] = columnWidths
+}
+
 /**
  * Formatea los datos de logs para exportación
  */
@@ -38,25 +53,13 @@ const formatLogsForExport = (logs) => {
 export const exportToExcel = (logs) => {
     const formattedData = formatLogsForExport(logs)
     const worksheet = XLSX.utils.json_to_sheet(formattedData)
-    
-    // Ajustar ancho de columnas
-    const columnWidths = [
-        { wch: 5 },   // ID
-        { wch: 25 },  // Nombre
-        { wch: 12 },  // Precio
-        { wch: 8 },   // Stock
-        { wch: 20 },  // Fecha Creación
-        { wch: 25 },  // Creado Por
-        { wch: 30 },  // Email Creador
-        { wch: 20 },  // Fecha Modificación
-        { wch: 25 },  // Modificado Por
-        { wch: 30 }   // Email Modificador
-    ]
-    worksheet['!cols'] = columnWidths
-    
+
+    // Auto-ajustar columnas
+    autoFitColumns(formattedData, worksheet)
+
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Logs de Productos')
-    
+
     const filename = `export_productos_${new Date().toISOString().split('T')[0]}.xlsx`
     XLSX.writeFile(workbook, filename)
 }

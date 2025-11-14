@@ -7,7 +7,8 @@
 - [Rutas del Backend](https://github.com/Ssanntii/Stock_Final_UTN/blob/main/docs/RutasBackend.md).
 - [Rutas del Frontend](https://github.com/Ssanntii/Stock_Final_UTN/blob/main/docs/RutasFrontend.md).
 - [Diagrama de la Base de datos](https://github.com/Ssanntii/Stock_Final_UTN/blob/main/docs/DB.md).
-- Exportación
+- [Exportación] (https://github.com/Ssanntii/Stock_Final_UTN/blob/main/docs/Exportaci%C3%B3n.md)
+
 ## 📋 RESUMEN DE PRIORIDADES
 ### Realizado
 
