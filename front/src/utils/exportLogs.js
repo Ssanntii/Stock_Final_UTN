@@ -57,7 +57,7 @@ export const exportToExcel = (logs) => {
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Logs de Productos')
     
-    const filename = `logs_productos_${new Date().toISOString().split('T')[0]}.xlsx`
+    const filename = `export_productos_${new Date().toISOString().split('T')[0]}.xlsx`
     XLSX.writeFile(workbook, filename)
 }
 
