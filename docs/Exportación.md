@@ -8,6 +8,8 @@ Al ingresar a la ruta `/logs` se permite crear:
 
 ✔ Un archivo CSV (.csv)
 
+✔ Un archivo JSON (.json)
+
 
 ### 🌐 Información exportada
 

@@ -198,10 +198,64 @@ Returns:
 |:---:|:---:|:---:|
 |OK|200|Usuario creado exitosamente ({ error: false, msg: "Usuario creado" })|
 |Conflicto|403|Las contraseñas no coinciden|
+|Petición erronea|400|La contraseña debe tener al menos 6 caracteres|
 |Error|400|Error de validación o al crear el usuario (ej. email ya existe)|
 
 ### 🔑 Iniciar sesión (Login)
 - `/users/login` - POST Ruta encargada de autenticar un usuario y generar un token de acceso (JWT).
+
+Body (req.body):
+
+```ts
+{
+  full_name: 'string', 
+  current_password: 'string',
+  new_password: 'string'
+}
+```
+
+Ejemplo de datos enviados para el cambio de contraseña:
+```ts
+{
+  full_name: "Juan", 
+  current_password: '123456',
+  new_password: '123456'
+}
+```
+
+Headers:
+
+```ts
+// No requiere
+```
+
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Cambios exitosos|
+|Petición erronea|400|La contraseña debe tener al menos 6 caracteres|
+|No Encontrado|404|El usuario no existe|
+|Conflicto|403|Contraseña actual/nuevas incorrecta/s|
+|Error|500|Error interno del servidor|
+
+### ✅ Verificar Token
+- `/users/verify-token` - GET Ruta encargada de verificar la validez de un token JWT.
+
+Headers:
+```ts
+{
+  authorization: "Bearer <token>" // Token JWT a verificar
+}
+```
+
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Token válido (devuelve { error: false })|
+|OK|200|Token no válido, expirado o faltante (devuelve { error: true })|
+
+### 📷 Actualizar usuario
+- `/users/update` - PUT Ruta encargada de facilitar el cambio de nombre, contraseña e imagen de perfil del usuario.
 
 Body (req.body):
 
@@ -233,22 +287,6 @@ Returns:
 |No Encontrado|404|El usuario no existe|
 |Conflicto|403|Contraseña incorrecta|
 |Error|500|Error interno del servidor al iniciar sesión|
-
-### ✅ Verificar Token
-- `/users/verify-token` - GET Ruta encargada de verificar la validez de un token JWT.
-
-Headers:
-```ts
-{
-  authorization: "Bearer <token>" // Token JWT a verificar
-}
-```
-
-Returns:
-|Código|Número|Mensaje|
-|:---:|:---:|:---:|
-|OK|200|Token válido (devuelve { error: false })|
-|OK|200|Token no válido, expirado o faltante (devuelve { error: true })|
 
 ## 📜 Rutas de Logs (`/products/logs`)
 ### 📖 Obtener Logs de Productos

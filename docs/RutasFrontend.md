@@ -29,6 +29,7 @@ El acceso está controlado mediante el componente `ProtectedRoute`.
 |`/product` |`ProductForm`|Formulario para **agregar** un nuevo producto|
 |`/product/:id`|`ProductForm`|Formulario para **editar** un producto existente (se lo busca usando `id`)|
 |`/logs`|`Logs`|Página que los cambios recibidos en la base de datos (como creación/edicion de productos), accesible solo para usuarios autorizados|
+|`/profile`|`Profile`|Página accesible para los usuarios que ofrece información sobre su perfil y permite cambiar `nombre`, `contraseña` e `imagen de perfil`|
 
 ---
 
