@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize"
 import { conn } from "../config/db.mjs"
-import { User } from "./User.mjs" // Importar el modelo User
 
 export class Products extends Model {}
 
@@ -64,3 +63,4 @@ Products.init(
         timestamps: true
     }
 )
+

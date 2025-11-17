@@ -5,45 +5,42 @@ import { verifyToken } from '../api/apiConfig'
 
 const ProtectedRoute = ({ children }) => {
   const { user, logout } = useStore()
-  const [isVerifying, setIsVerifying] = useState(true)
-  const [isValid, setIsValid] = useState(false)
+  const [checking, setChecking] = useState(true)
+  const [authorized, setAuthorized] = useState(false)
 
   useEffect(() => {
-    const validateToken = async () => {
-      // Si no hay token o email, no está autenticado
+    const checkAuth = async () => {
+      // Si no hay token o email -> NO autenticado
       if (!user.token || !user.email) {
-        setIsVerifying(false)
-        setIsValid(false)
+        setAuthorized(false)
+        setChecking(false)
         return
       }
 
       try {
-        // Verificar el token con el backend
-        const response = await verifyToken()
-        
-        // Si la respuesta es exitosa y no hay error
-        if (response && !response.error) {
-          setIsValid(true)
+        // Verificar token en backend
+        const resp = await verifyToken()
+
+        if (resp && !resp.error) {
+          setAuthorized(true)
         } else {
-          // Token inválido, hacer logout
           logout()
-          setIsValid(false)
+          setAuthorized(false)
         }
-      } catch (error) {
-        console.error('Error al verificar token:', error)
-        // En caso de error, cerrar sesión por seguridad
+      } catch (err) {
+        console.error("Error al verificar token:", err)
         logout()
-        setIsValid(false)
+        setAuthorized(false)
       } finally {
-        setIsVerifying(false)
+        setChecking(false)
       }
     }
 
-    validateToken()
+    checkAuth()
   }, [user.token, user.email, logout])
 
-  // Mostrar un loading mientras verifica
-  if (isVerifying) {
+  // Mostrar loader mientras valida
+  if (checking) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-center">
@@ -54,12 +51,12 @@ const ProtectedRoute = ({ children }) => {
     )
   }
 
-  // Si no es válido, redirigir al login
-  if (!isValid) {
+  // Si no está autorizado → al login
+  if (!authorized) {
     return <Navigate to="/auth" replace />
   }
 
-  // Si es válido, mostrar el contenido protegido
+  // Si está permitido → renderiza la página
   return children
 }
 

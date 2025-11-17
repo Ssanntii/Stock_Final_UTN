@@ -4,6 +4,9 @@ import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
 import { validateUserRegister, validateUserLogin } from '../middleware/validation.mjs'
 import { authenticateToken } from '../middleware/auth.mjs'
+import multer from "multer";
+
+const upload = multer();
 
 export const userRoutes = Router()
 
@@ -123,3 +126,46 @@ userRoutes.get("/verify-token", authenticateToken, async (req, res) => {
     })
   }
 })
+
+// Ruta para actualizar perfil del usuario (protegida)
+userRoutes.put("/update", authenticateToken, upload.none(), async (req, res) => {
+  try {
+    const { full_name } = req.body;
+
+    if (!full_name || full_name.trim() === "") {
+      return res.status(400).json({
+        error: true,
+        msg: "El nombre no puede estar vacío"
+      });
+    }
+
+    // req.user lo establece authenticateToken
+    const user = await User.findOne({ where: { email: req.user.email } });
+
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        msg: "Usuario no encontrado"
+      });
+    }
+
+    user.full_name = full_name.trim();
+    await user.save();
+
+    res.json({
+      error: false,
+      msg: "Perfil actualizado correctamente",
+      user: {
+        full_name: user.full_name,
+        email: user.email
+      }
+    });
+
+  } catch (err) {
+    console.error("Error al actualizar perfil:", err);
+    res.status(500).json({
+      error: true,
+      msg: "Error interno del servidor"
+    });
+  }
+});

@@ -9,6 +9,7 @@ import Register from "../pages/Register"
 import ProductForm from "../pages/AddEditProduct"
 import Logs from "../pages/Logs"
 import NotFoundPage from "../pages/NotFoundPage"
+import Profile from '../pages/Profile'
 
 const AppRoutes = () => {
     return (
@@ -48,6 +49,15 @@ const AppRoutes = () => {
                         <Logs />
                     </ProtectedRoute>
                 } 
+            />
+
+            <Route 
+                path="/profile"
+                element={
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                }
             />
 
             {/* Ruta para errores 404 - Debe ir al final */}
