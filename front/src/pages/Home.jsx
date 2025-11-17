@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 
 import { fetchProducts, deleteProduct } from '../api/apiConfig'
 import { useStore } from '../store/useStore'
 
 import ProductList from '../components/ProductList'
 import Button from '../components/ui/Button'
+import UserMenu from '../components/ui/UserMenu'
 
 import logo from '/stock.png'
 
@@ -13,12 +14,10 @@ const Home = () => {
   const { user, logout } = useStore()
   const isAuthenticated = user.token !== null && user.email !== null
 
-  // Estados principales
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Obtener productos
   const loadProducts = async () => {
     try {
       setLoading(true)
@@ -33,7 +32,6 @@ const Home = () => {
     }
   }
 
-  // Eliminar producto
   const handleDeleteProduct = async (id) => {
     try {
       setError(null)
@@ -44,14 +42,7 @@ const Home = () => {
       setError(err.message)
     }
   }
-
-  // Cerrar sesión
-  const handleLogout = () => {
-    logout()
-    setError(null)
-  }
   
-  // Cargar productos al montar el componente
   useEffect(() => {
     loadProducts()
   }, [])
@@ -61,52 +52,26 @@ const Home = () => {
       {/* Header responsive */}
       <header className="bg-slate-800 shadow-sm border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center justify-between">
+            {/* Logo y título */}
             <div className="flex items-center gap-3">
-              <img src={logo} alt='logo' className="w-12 h-12 flex-shrink-0" />
+              <img src={logo} alt='logo' className="w-12 h-12 shrink-0" />
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-white">
                   Gestión de Productos
                 </h1>
-                <p className="text-sm text-slate-300 mt-1">
-                  {isAuthenticated 
-                    ? `Bienvenido, ${user.full_name}!` 
-                    : 'Administrá tu inventario de productos'}
-                </p>
+                {isAuthenticated && (
+                  <p className="text-sm text-slate-300 mt-1">
+                    Bienvenido, {user.full_name}!
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* Botones de autenticación o logout */}
-            <div className="flex items-center gap-3 flex-wrap">
+            {/* Menú de usuario o botones de auth */}
+            <div className="flex items-center gap-3">
               {isAuthenticated ? (
-                <>
-                  <Link to="/profile">
-                    <Button variant="secondary" size="md">
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      Mi Perfil
-                    </Button>
-                  </Link>
-                  <Link to="/logs">
-                    <Button variant="secondary" size="md">
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      Ver Historial
-                    </Button>
-                  </Link>
-                  <Button 
-                    variant="danger" 
-                    size="md"
-                    onClick={handleLogout}
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Cerrar Sesión
-                  </Button>
-                </>
+                <UserMenu />
               ) : (
                 <>
                   <Link to="/auth">
@@ -129,7 +94,6 @@ const Home = () => {
       {/* Contenido principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         
-        {/* Mostrar errores */}
         {error && (
           <div className="mb-6 bg-red-900/50 border border-red-700 rounded-lg p-4">
             <div className="flex items-center">
@@ -141,7 +105,6 @@ const Home = () => {
           </div>
         )}
 
-        {/* Loading */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="flex items-center space-x-3">

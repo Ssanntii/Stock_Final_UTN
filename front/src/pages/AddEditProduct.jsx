@@ -5,6 +5,7 @@ import { fetchProductById, createProduct, updateProduct } from '../api/apiConfig
 
 import Input from '../components/ui/Input'
 import Button from '../components/ui/Button'
+import UserMenu from '../components/ui/UserMenu'
 
 import logo from '/stock.png'
 
@@ -13,19 +14,16 @@ const ProductForm = () => {
   const navigate = useNavigate()
   const isEditing = Boolean(id)
 
-  // Estados del formulario - SOLO campos que existen en el backend
   const [formData, setFormData] = useState({
     name: '',
     price: '',
     stock: ''
   })
   
-  // Estados de la UI
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
-  // Cargar producto si estamos editando
   useEffect(() => {
     if (isEditing) {
       loadProduct()
@@ -50,18 +48,16 @@ const ProductForm = () => {
     }
   }
 
-  // Manejar cambios en inputs - CORREGIDO
   const handleChange = (e) => {
     const { name, value } = e.target
     
     let processedValue = value
     
-    // Procesar precio: reemplazar comas por puntos
     if (name === 'price') {
       processedValue = value
-        .replace(/,/g, '.') // Reemplazar todas las comas
-        .replace(/[^0-9.]/g, '') // Solo permitir números y puntos
-        .replace(/(\..*)\./g, '$1') // Eliminar puntos duplicados
+        .replace(/,/g, '.')
+        .replace(/[^0-9.]/g, '')
+        .replace(/(\..*)\./g, '$1')
     }
     
     setFormData(prev => ({
@@ -70,7 +66,6 @@ const ProductForm = () => {
     }))
   }
 
-  // Validar formulario - SIMPLIFICADO
   const validateForm = () => {
     const errors = []
     
@@ -91,7 +86,6 @@ const ProductForm = () => {
     return errors
   }
 
-  // Enviar formulario - SIMPLIFICADO
   const handleSubmit = async (e) => {
     e.preventDefault()
     
@@ -125,7 +119,6 @@ const ProductForm = () => {
     }
   }
 
-  // Mostrar loading si estamos cargando un producto para editar
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -155,16 +148,18 @@ const ProductForm = () => {
               </div>
             </div>
             
-            {/* Botón volver */}
-            <Link
-              to="/"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-300 bg-slate-700 border border-slate-600 rounded-lg hover:bg-slate-600 transition-colors"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Volver
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-300 bg-slate-700 border border-slate-600 rounded-lg hover:bg-slate-600 transition-colors"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver
+              </Link>
+              <UserMenu />
+            </div>
           </div>
         </div>
       </header>
@@ -172,7 +167,6 @@ const ProductForm = () => {
       {/* Contenido principal */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         
-        {/* Mostrar errores */}
         {error && (
           <div className="mb-6 bg-red-900/50 border border-red-700 rounded-lg p-4">
             <div className="flex items-center">
@@ -184,11 +178,9 @@ const ProductForm = () => {
           </div>
         )}
 
-        {/* Formulario */}
         <div className="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-6 lg:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Nombre */}
             <div>
               <Input
                 label="Nombre del producto"
@@ -201,9 +193,7 @@ const ProductForm = () => {
               />
             </div>
 
-            {/* Precio y Stock */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Precio - SIN DUPLICACIÓN DEL $ */}
               <div>
                 <Input
                   label="Precio"
@@ -218,7 +208,6 @@ const ProductForm = () => {
                 />
               </div>
 
-              {/* Stock */}
               <div>
                 <label htmlFor="stock" className="block text-sm font-medium text-slate-300 mb-2">
                   Stock
@@ -237,7 +226,6 @@ const ProductForm = () => {
               </div>
             </div>
 
-            {/* Botones */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button 
                 type="submit" 
@@ -272,7 +260,6 @@ const ProductForm = () => {
               </Link>
             </div>
 
-            {/* Nota sobre campos obligatorios */}
             <p className="text-sm text-slate-400 pt-2">
               Los campos marcados con <span className="text-red-400 font-semibold">*</span> son obligatorios
             </p>

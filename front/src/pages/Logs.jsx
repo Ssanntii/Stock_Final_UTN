@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { fetchProductLogs } from '../api/apiConfig'
 import Button from '../components/ui/Button'
 import ExportButtons from '../components/ExportButtons'
+import UserMenu from '../components/ui/UserMenu'
 import logo from '/stock.png'
 
 const Logs = () => {
@@ -60,14 +61,18 @@ const Logs = () => {
                                 <p className="text-sm text-slate-300">Registro de creación y modificación</p>
                             </div>
                         </div>
-                        <Link to="/">
-                            <Button variant="secondary" size="md">
-                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                </svg>
-                                Volver
-                            </Button>
-                        </Link>
+                        
+                        <div className="flex items-center gap-3">
+                            <Link to="/">
+                                <Button variant="secondary" size="md">
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                    </svg>
+                                    Volver
+                                </Button>
+                            </Link>
+                            <UserMenu />
+                        </div>
                     </div>
                 </div>
             </header>
@@ -75,21 +80,18 @@ const Logs = () => {
             {/* Contenido */}
             <main className="max-w-7xl mx-auto px-4 py-8">
                 
-                {/* Error */}
                 {error && (
                     <div className="mb-6 bg-red-900/50 border border-red-700 rounded-lg p-4">
                         <p className="text-red-300">{error}</p>
                     </div>
                 )}
 
-                {/* Loading */}
                 {loading ? (
                     <div className="flex justify-center py-12">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
                     </div>
                 ) : (
                     <>
-                        {/* Barra de acciones: Buscador y Botones de exportación */}
                         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                             <div className="flex-1 w-full sm:w-auto">
                                 <input
@@ -109,7 +111,6 @@ const Logs = () => {
                             <ExportButtons data={filteredProducts} disabled={loading} />
                         </div>
 
-                        {/* Tabla */}
                         <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
                             {filteredProducts.length === 0 ? (
                                 <p className="text-center py-12 text-slate-400">
