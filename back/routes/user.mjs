@@ -4,9 +4,13 @@ import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
 import { validateUserRegister, validateUserLogin } from '../middleware/validation.mjs'
 import { authenticateToken } from '../middleware/auth.mjs'
-import multer from "multer";
+import { uploadProfilePicture } from '../config/multer.mjs'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const upload = multer();
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export const userRoutes = Router()
 
@@ -93,6 +97,7 @@ userRoutes.post("/login", validateUserLogin, async (req, res) => {
       user: {
         full_name: user.full_name,
         email: user.email,
+        profile_picture: user.profile_picture,
         token: token
       }
     })
@@ -115,7 +120,8 @@ userRoutes.get("/verify-token", authenticateToken, async (req, res) => {
       user: {
         id: req.user.id,
         full_name: req.user.full_name,
-        email: req.user.email
+        email: req.user.email,
+        profile_picture: req.user.profile_picture
       }
     })
   } catch (err) {
@@ -128,44 +134,81 @@ userRoutes.get("/verify-token", authenticateToken, async (req, res) => {
 })
 
 // Ruta para actualizar perfil del usuario (protegida)
-userRoutes.put("/update", authenticateToken, upload.none(), async (req, res) => {
+userRoutes.put("/update", authenticateToken, uploadProfilePicture.single('profile_picture'), async (req, res) => {
   try {
-    const { full_name } = req.body;
+    const { full_name, current_password, new_password } = req.body
 
-    if (!full_name || full_name.trim() === "") {
-      return res.status(400).json({
-        error: true,
-        msg: "El nombre no puede estar vacío"
-      });
-    }
-
-    // req.user lo establece authenticateToken
-    const user = await User.findOne({ where: { email: req.user.email } });
+    // Buscar usuario
+    const user = await User.findOne({ where: { email: req.user.email } })
 
     if (!user) {
       return res.status(404).json({
         error: true,
         msg: "Usuario no encontrado"
-      });
+      })
     }
 
-    user.full_name = full_name.trim();
-    await user.save();
+    // Actualizar nombre si se proporciona
+    if (full_name && full_name.trim() !== "") {
+      user.full_name = full_name.trim()
+    }
+
+    // Actualizar foto de perfil si se sube una nueva
+    if (req.file) {
+      // Eliminar foto anterior si existe
+      if (user.profile_picture) {
+        const oldPath = path.join(__dirname, '..', user.profile_picture)
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath)
+        }
+      }
+      
+      // Guardar ruta relativa de la nueva foto
+      user.profile_picture = `/uploads/profiles/${req.file.filename}`
+    }
+
+    // Cambiar contraseña si se proporciona
+    if (current_password && new_password) {
+      // Verificar contraseña actual
+      const isValidPassword = await bcrypt.compare(current_password, user.hash)
+      
+      if (!isValidPassword) {
+        return res.status(403).json({
+          error: true,
+          msg: "La contraseña actual es incorrecta"
+        })
+      }
+
+      // Validar nueva contraseña
+      if (new_password.length < 6) {
+        return res.status(400).json({
+          error: true,
+          msg: "La nueva contraseña debe tener al menos 6 caracteres"
+        })
+      }
+
+      // Hash de la nueva contraseña
+      const salt = await bcrypt.genSalt(10)
+      user.hash = await bcrypt.hash(new_password, salt)
+    }
+
+    await user.save()
 
     res.json({
       error: false,
       msg: "Perfil actualizado correctamente",
       user: {
         full_name: user.full_name,
-        email: user.email
+        email: user.email,
+        profile_picture: user.profile_picture
       }
-    });
+    })
 
   } catch (err) {
-    console.error("Error al actualizar perfil:", err);
+    console.error("Error al actualizar perfil:", err)
     res.status(500).json({
       error: true,
-      msg: "Error interno del servidor"
-    });
+      msg: err.message || "Error interno del servidor"
+    })
   }
-});
+})

@@ -1,8 +1,2 @@
-back/node_modules
 back/package-lock.json
-back/.env
-front/node_modules
 front/package-lock.json
-front/.env
-front/dist
-

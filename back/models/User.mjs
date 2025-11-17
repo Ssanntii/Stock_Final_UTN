@@ -30,6 +30,11 @@ User.init({
     type: DataTypes.CHAR(60),
     allowNull: false
   },
+  profile_picture: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: null
+  },
   isActivate: {
     type: DataTypes.BOOLEAN,
     default: 0
@@ -42,5 +47,3 @@ User.init({
   sequelize: conn,
   timestamps: true
 })
-
-// ELIMINAR COMPLETAMENTE el bloque User.associate

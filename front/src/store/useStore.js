@@ -5,7 +5,8 @@ export const useStore = create(persist(
   (set, get) => ({
     user: {
       email: null,
-      full_name: null,  // ✅ Estandarizado a full_name
+      full_name: null,
+      profile_picture: null,
       token: null
     },
     setUser: (newUser) => set({ user: newUser }),
@@ -14,11 +15,12 @@ export const useStore = create(persist(
       set({ 
         user: { 
           email: null, 
-          full_name: null,  // ✅ Estandarizado a full_name
+          full_name: null,
+          profile_picture: null,
           token: null 
         } 
       })
-      // IMPORTANTE: Limpiar el localStorage manualmente
+      // Limpiar el localStorage manualmente
       localStorage.removeItem('token_login_web')
     },
     isAuthenticated: () => {
