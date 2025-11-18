@@ -33,7 +33,7 @@ export const authenticateToken = async (req, res, next) => {
     // Buscar el usuario en la base de datos
     const user = await User.findOne({ 
       where: { email: decoded.email },
-      attributes: ['id', 'full_name', 'email', 'isActivate']
+      attributes: ['id', 'full_name', 'email', 'verified']
     })
     
     if (!user) {
