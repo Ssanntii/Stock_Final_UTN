@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { validateUserRegister, validateUserLogin } from '../middleware/validation.mjs'
 import { authenticateToken } from '../middleware/auth.mjs'
 import { uploadProfilePicture } from '../config/multer.mjs'
+import { sendVerificationEmail } from '../utils/emailService.mjs' // Necesitarás crear este archivo
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -14,13 +15,18 @@ const __dirname = path.dirname(__filename)
 
 export const userRoutes = Router()
 
-// Ruta REGISTER (con validaciones)
+// Función para generar código de verificación de 6 dígitos
+const generateVerificationCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString()
+}
+
+// Ruta REGISTER (con validaciones y verificación por email)
 userRoutes.post("/register", validateUserRegister, async (req, res) => {
   try {
     const { full_name, email, password } = req.body
 
     // Verificar si el usuario ya existe
-    const existingUser = await User.findOne({ where: { email } })
+    const existingUser = await User.findOne({ where: { email: email.toLowerCase().trim() } })
     if (existingUser) {
       return res.status(409).json({
         error: true,
@@ -32,19 +38,37 @@ userRoutes.post("/register", validateUserRegister, async (req, res) => {
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
 
-    // Crear usuario
+    // Generar código de verificación
+    const verificationCode = generateVerificationCode()
+
+    // Crear usuario (sin verificar)
     const user = new User({
       full_name: full_name.trim(),
       email: email.toLowerCase().trim(),
       hash,
+      verification_code: verificationCode,
+      verified: false,
       activateToken: "123"
     })
 
     await user.save()
+
+    // Enviar email con el código de verificación
+    try {
+      await sendVerificationEmail(user.email, user.full_name, verificationCode)
+    } catch (emailError) {
+      console.error('Error al enviar email:', emailError)
+      // Opcional: podrías eliminar el usuario si el email falla
+      // await user.destroy()
+      return res.status(500).json({
+        error: true,
+        msg: "Error al enviar el email de verificación. Por favor, intenta nuevamente."
+      })
+    }
     
     res.json({ 
       error: false, 
-      msg: "Usuario creado exitosamente" 
+      msg: "Usuario creado exitosamente. Revisa tu email para verificar tu cuenta." 
     })
 
   } catch (err) {
@@ -56,7 +80,133 @@ userRoutes.post("/register", validateUserRegister, async (req, res) => {
   }
 })
 
-// Ruta LOGIN (con validaciones)
+// Ruta para VERIFICAR EMAIL
+userRoutes.post("/verify-email", async (req, res) => {
+  try {
+    const { email, verification_code } = req.body
+
+    // Validar datos
+    if (!email || !verification_code) {
+      return res.status(400).json({
+        error: true,
+        msg: "Email y código de verificación son requeridos"
+      })
+    }
+
+    // Buscar usuario
+    const user = await User.findOne({ 
+      where: { 
+        email: email.toLowerCase().trim() 
+      } 
+    })
+
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        msg: "Usuario no encontrado"
+      })
+    }
+
+    // Verificar si ya está verificado
+    if (user.verified) {
+      return res.status(400).json({
+        error: true,
+        msg: "Este usuario ya está verificado"
+      })
+    }
+
+    // Verificar código
+    if (user.verification_code !== verification_code) {
+      return res.status(400).json({
+        error: true,
+        msg: "Código de verificación incorrecto"
+      })
+    }
+
+    // Marcar como verificado
+    user.verified = true
+    user.verification_code = null // Limpiar el código
+    await user.save()
+
+    res.json({
+      error: false,
+      msg: "Email verificado exitosamente. Ahora puedes iniciar sesión."
+    })
+
+  } catch (err) {
+    console.error('Error en verificación:', err)
+    res.status(500).json({
+      error: true,
+      msg: "Error al verificar el código"
+    })
+  }
+})
+
+// Ruta para REENVIAR código de verificación
+userRoutes.post("/resend-verification", async (req, res) => {
+  try {
+    const { email } = req.body
+
+    if (!email) {
+      return res.status(400).json({
+        error: true,
+        msg: "Email es requerido"
+      })
+    }
+
+    // Buscar usuario
+    const user = await User.findOne({ 
+      where: { 
+        email: email.toLowerCase().trim() 
+      } 
+    })
+
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        msg: "Usuario no encontrado"
+      })
+    }
+
+    // Verificar si ya está verificado
+    if (user.verified) {
+      return res.status(400).json({
+        error: true,
+        msg: "Este usuario ya está verificado"
+      })
+    }
+
+    // Generar nuevo código
+    const newVerificationCode = generateVerificationCode()
+    user.verification_code = newVerificationCode
+    await user.save()
+
+    // Enviar email
+    try {
+      await sendVerificationEmail(user.email, user.full_name, newVerificationCode)
+    } catch (emailError) {
+      console.error('Error al enviar email:', emailError)
+      return res.status(500).json({
+        error: true,
+        msg: "Error al enviar el email de verificación"
+      })
+    }
+
+    res.json({
+      error: false,
+      msg: "Código de verificación reenviado exitosamente"
+    })
+
+  } catch (err) {
+    console.error('Error al reenviar código:', err)
+    res.status(500).json({
+      error: true,
+      msg: "Error al reenviar el código"
+    })
+  }
+})
+
+// Ruta LOGIN (con validaciones y verificación de email)
 userRoutes.post("/login", validateUserLogin, async (req, res) => {
   try {
     const { email, password } = req.body
@@ -72,6 +222,14 @@ userRoutes.post("/login", validateUserLogin, async (req, res) => {
       return res.status(404).json({
         error: true,
         msg: "El usuario no existe"
+      })
+    }
+
+    // VERIFICAR SI EL EMAIL ESTÁ VERIFICADO
+    if (!user.verified) {
+      return res.status(403).json({
+        error: true,
+        msg: "Por favor verifica tu email antes de iniciar sesión"
       })
     }
 

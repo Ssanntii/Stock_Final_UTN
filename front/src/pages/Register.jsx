@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 
 import { registerUser } from '../api/apiConfig'
+import VerificationModal from './VerificationModal'
 
 import { Mail, Lock, User, UserPlus, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import logo from '/stock.png'
@@ -28,8 +29,13 @@ const Register = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
+  
+  // Estados para verificación
+  const [showVerificationModal, setShowVerificationModal] = useState(false)
+  const [verificationLoading, setVerificationLoading] = useState(false)
+  const [verificationError, setVerificationError] = useState(null)
 
-  // Funciones 
+  // Función para crear usuario (sin verificar aún)
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -45,16 +51,8 @@ const Register = () => {
       }
       await registerUser(body)
 
-      setFullName("")
-      setEmail("")
-      setPassword("")
-      setConfirmPassword("")
-      setSuccess(true)
-
-      // Redirigir al login después de 2 segundos
-      setTimeout(() => {
-        navigate('/auth')
-      }, 2000)
+      // Mostrar modal de verificación en lugar de redirigir
+      setShowVerificationModal(true)
 
     } catch (error) {
       console.log("Hubo un error al crear el usuario: ", error)
@@ -62,6 +60,53 @@ const Register = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Función para verificar el código
+  const handleVerifyCode = async (code) => {
+  setVerificationLoading(true)
+  setVerificationError(null)
+
+  try {
+    const response = await fetch('http://localhost:3000/users/verify-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        verification_code: code
+      })
+    })
+
+    const data = await response.json()
+
+    // ✅ Cambiar esta parte - tu backend usa "error" no "ok"
+    if (data.error) {
+      throw new Error(data.msg || 'Código de verificación incorrecto')
+    }
+
+    // Verificación exitosa
+    setSuccess(true)
+    setShowVerificationModal(false)
+    
+    // Limpiar campos
+    setFullName("")
+    setEmail("")
+    setPassword("")
+    setConfirmPassword("")
+
+    // Redirigir al login después de 2 segundos
+    setTimeout(() => {
+      navigate('/auth')
+    }, 2000)
+
+  } catch (error) {
+    console.log("Error al verificar código: ", error)
+    setVerificationError(error.message || "Error al verificar el código")
+  } finally {
+    setVerificationLoading(false)
+  }
   }
 
   return (
@@ -118,7 +163,7 @@ const Register = () => {
             )}
 
             {/* Formulario */}
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-5">
               {/* Input Nombre completo con icono */}
               <div className="space-y-2">
                 <label htmlFor="full_name" className="block text-sm font-medium text-slate-300">
@@ -201,7 +246,7 @@ const Register = () => {
 
               {/* Botón de submit */}
               <button
-                type="submit"
+                onClick={handleSubmit}
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 mt-6"
               >
@@ -217,7 +262,7 @@ const Register = () => {
                   </>
                 )}
               </button>
-            </form>
+            </div>
 
             {/* Divider */}
             <div className="mt-8 pt-6 border-t border-slate-700/50">
@@ -226,6 +271,16 @@ const Register = () => {
           </div>
         </div>
       </main>
+
+      {/* Modal de Verificación */}
+      <VerificationModal
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        email={email}
+        onVerify={handleVerifyCode}
+        loading={verificationLoading}
+        error={verificationError}
+      />
     </div>
   )
 }

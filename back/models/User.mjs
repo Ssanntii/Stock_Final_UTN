@@ -35,15 +35,31 @@ User.init({
     allowNull: true,
     defaultValue: null
   },
-  isActivate: {
-    type: DataTypes.BOOLEAN,
-    default: 0
+   verification_code: {
+    type: DataTypes.STRING(6),
+    allowNull: true,
+    comment: 'Código de 6 dígitos para verificar email'
   },
-  activateToken: {
-    type: DataTypes.STRING
+  verified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    comment: 'Indica si el usuario ha verificado su email'
+  },
+  verification_code_expires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'Fecha de expiración del código de verificación (opcional)'
   }
 }, {
   tableName: "users",
   sequelize: conn,
   timestamps: true
+})
+
+User.beforeCreate((user) => {
+  if (user.verification_code) {
+    // Establecer expiración en 15 minutos
+    user.verification_code_expires = new Date(Date.now() + 15 * 60 * 1000)
+  }
 })
