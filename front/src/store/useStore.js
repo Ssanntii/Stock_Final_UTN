@@ -7,25 +7,30 @@ export const useStore = create(persist(
       email: null,
       full_name: null,
       profile_picture: null,
-      token: null
+      token: null,
+      role: null // ⭐ NUEVO: rol del usuario
     },
     setUser: (newUser) => set({ user: newUser }),
     logout: () => {
-      // Resetear el estado
       set({ 
         user: { 
           email: null, 
           full_name: null,
           profile_picture: null,
-          token: null 
+          token: null,
+          role: null // ⭐ Resetear también el rol
         } 
       })
-      // Limpiar el localStorage manualmente
       localStorage.removeItem('token_login_web')
     },
     isAuthenticated: () => {
       const state = get()
       return state.user.token !== null && state.user.email !== null
+    },
+    // ⭐ NUEVO: Método para verificar si es admin
+    isAdmin: () => {
+      const state = get()
+      return state.user.role === 'admin'
     }
   }),
   {

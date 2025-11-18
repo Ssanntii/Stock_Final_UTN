@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { Products, User } from "../models/associations.mjs" 
 import { getProductLogs } from "../controllers/logsController.mjs"
-import { authenticateToken } from "../middleware/auth.mjs"
+import { authenticateToken, isAdmin } from "../middleware/auth.mjs" // ⭐ Importar isAdmin
 import { validateProduct, validateId } from "../middleware/validation.mjs"
 
 export const productRoutes = Router()
@@ -16,8 +16,8 @@ productRoutes.get("/", async (req, res) => {
     }
 })
 
-// Ruta LOGS para ver quién creó o modificó productos (protegida)
-productRoutes.get("/logs", authenticateToken, getProductLogs)
+// Ruta LOGS para ver quién creó o modificó productos (protegida - solo admin)
+productRoutes.get("/logs", authenticateToken, isAdmin, getProductLogs) // ⭐ Agregado isAdmin
 
 // Ruta GET para obtener UN producto por ID (pública)
 productRoutes.get("/:id", async (req, res) => {
@@ -35,12 +35,11 @@ productRoutes.get("/:id", async (req, res) => {
     }
 })
 
-// Ruta POST para crear producto (protegida)
-productRoutes.post("/", authenticateToken, async (req, res) => {
+// ⭐ Ruta POST para crear producto (SOLO ADMIN)
+productRoutes.post("/", authenticateToken, isAdmin, async (req, res) => {
     try {
         const { name, price, stock } = req.body
         
-        // Validaciones de entrada
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
             return res.status(400).json({ error: "El nombre es obligatorio" })
         }
@@ -53,12 +52,11 @@ productRoutes.post("/", authenticateToken, async (req, res) => {
             return res.status(400).json({ error: "El stock no puede ser negativo" })
         }
         
-        // Crear producto usando el usuario del middleware
         const newProduct = await Products.create({ 
             name: name.trim(), 
             price, 
             stock,
-            created_by: req.user.id  // ✅ Usuario ya disponible desde el middleware
+            created_by: req.user.id
         })
         
         res.json(newProduct)
@@ -67,13 +65,12 @@ productRoutes.post("/", authenticateToken, async (req, res) => {
     }
 })
 
-// Ruta PUT para modificar producto (protegida)
-productRoutes.put("/:id", authenticateToken, async (req, res) => {
+// ⭐ Ruta PUT para modificar producto (SOLO ADMIN)
+productRoutes.put("/:id", authenticateToken, isAdmin, async (req, res) => {
     try {
         const { id } = req.params
         const { name, price, stock } = req.body
         
-        // Validaciones de entrada
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
             return res.status(400).json({ error: "El nombre es obligatorio" })
         }
@@ -86,17 +83,15 @@ productRoutes.put("/:id", authenticateToken, async (req, res) => {
             return res.status(400).json({ error: "El stock no puede ser negativo" })
         }
         
-        // Buscar producto
         const product = await Products.findByPk(id)
         if (!product) {
             return res.status(404).json({ error: "Producto no encontrado" })
         }
         
-        // Actualizar producto
         product.name = name.trim()
         product.price = price
         product.stock = stock
-        product.modified_by = req.user.id  // ✅ Usuario ya disponible desde el middleware
+        product.modified_by = req.user.id
         
         await product.save()
         res.json(product)
@@ -105,8 +100,8 @@ productRoutes.put("/:id", authenticateToken, async (req, res) => {
     }
 })
 
-// Ruta DELETE para eliminar un producto (protegida)
-productRoutes.delete("/:id", authenticateToken, async (req, res) => {
+// ⭐ Ruta DELETE para eliminar un producto (SOLO ADMIN)
+productRoutes.delete("/:id", authenticateToken, isAdmin, async (req, res) => {
     try {
         const { id } = req.params
         

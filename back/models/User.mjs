@@ -30,12 +30,19 @@ User.init({
     type: DataTypes.CHAR(60),
     allowNull: false
   },
+  // ⭐ NUEVO CAMPO: rol del usuario
+  role: {
+    type: DataTypes.ENUM('admin', 'user'),
+    allowNull: false,
+    defaultValue: 'user',
+    comment: 'Rol del usuario: admin puede gestionar productos, user solo comprar'
+  },
   profile_picture: {
     type: DataTypes.STRING,
     allowNull: true,
     defaultValue: null
   },
-   verification_code: {
+  verification_code: {
     type: DataTypes.STRING(6),
     allowNull: true,
     comment: 'Código de 6 dígitos para verificar email'
@@ -59,7 +66,6 @@ User.init({
 
 User.beforeCreate((user) => {
   if (user.verification_code) {
-    // Establecer expiración en 15 minutos
     user.verification_code_expires = new Date(Date.now() + 15 * 60 * 1000)
   }
 })

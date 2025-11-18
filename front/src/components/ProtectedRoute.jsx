@@ -10,7 +10,6 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Si no hay token o email -> NO autenticado
       if (!user.token || !user.email) {
         setAuthorized(false)
         setChecking(false)
@@ -18,7 +17,6 @@ const ProtectedRoute = ({ children }) => {
       }
 
       try {
-        // Verificar token en backend
         const resp = await verifyToken()
 
         if (resp && !resp.error) {
@@ -39,7 +37,6 @@ const ProtectedRoute = ({ children }) => {
     checkAuth()
   }, [user.token, user.email, logout])
 
-  // Mostrar loader mientras valida
   if (checking) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -51,12 +48,10 @@ const ProtectedRoute = ({ children }) => {
     )
   }
 
-  // Si no está autorizado → al login
   if (!authorized) {
     return <Navigate to="/auth" replace />
   }
 
-  // Si está permitido → renderiza la página
   return children
 }
 

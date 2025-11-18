@@ -7,7 +7,6 @@ import { User } from '../models/User.mjs'
  */
 export const authenticateToken = async (req, res, next) => {
   try {
-    // Obtener el header de autorización
     const auth = req.headers.authorization
     
     if (!auth) {
@@ -17,7 +16,6 @@ export const authenticateToken = async (req, res, next) => {
       })
     }
 
-    // Extraer el token (formato: "Bearer TOKEN")
     const token = auth.split(" ")[1]
     
     if (!token) {
@@ -27,13 +25,12 @@ export const authenticateToken = async (req, res, next) => {
       })
     }
 
-    // Verificar el token
     const decoded = jwt.verify(token, process.env.SECRET)
     
-    // Buscar el usuario en la base de datos
+    // ⭐ INCLUIR EL ROL en la búsqueda
     const user = await User.findOne({ 
       where: { email: decoded.email },
-      attributes: ['id', 'full_name', 'email', 'verified']
+      attributes: ['id', 'full_name', 'email', 'verified', 'role'] // ← Agregar 'role'
     })
     
     if (!user) {
@@ -43,14 +40,10 @@ export const authenticateToken = async (req, res, next) => {
       })
     }
 
-    // Agregar el usuario al request para uso en las rutas
     req.user = user
-    
-    // Continuar con la siguiente función
     next()
     
   } catch (error) {
-    // Manejar diferentes tipos de errores de JWT
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ 
         error: "Token inválido",
@@ -65,10 +58,27 @@ export const authenticateToken = async (req, res, next) => {
       })
     }
     
-    // Error genérico
     return res.status(500).json({ 
       error: "Error de autenticación",
       msg: error.message 
     })
   }
+}
+
+// ⭐ NUEVO: Middleware para verificar que el usuario sea ADMIN
+export const isAdmin = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      error: "Acceso denegado",
+      msg: "Solo los administradores pueden realizar esta acción"
+    })
+  }
+
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      error: "Acceso denegado",
+      msg: "Solo los administradores pueden realizar esta acción"
+    })
+  }
+  next()
 }

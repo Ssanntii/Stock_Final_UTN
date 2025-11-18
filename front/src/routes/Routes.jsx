@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router"
 
 import Public from '../components/layouts/Public'
 import ProtectedRoute from '../components/ProtectedRoute'
+import AdminRoute from '../components/AdminRoute' // ⭐ NUEVO
 
 import Home from "../pages/Home"
 import Login from "../pages/Login"
@@ -10,11 +11,12 @@ import ProductForm from "../pages/AddEditProduct"
 import Logs from "../pages/Logs"
 import NotFoundPage from "../pages/NotFoundPage"
 import Profile from '../pages/Profile'
+import CartPage from '../pages/CartPage' // ⭐ NUEVO
 
 const AppRoutes = () => {
     return (
         <Routes>
-            {/* Ruta principal - Lista de productos */}
+            {/* Ruta principal - Lista de productos (pública) */}
             <Route path="/" element={<Home />} />
 
             {/* Rutas de autenticación */}
@@ -23,34 +25,45 @@ const AppRoutes = () => {
                 <Route path="register" element={<Register />} />
             </Route>
 
-            {/* Rutas protegidas para crear/modificar productos */}
+            {/* ⭐ NUEVA: Ruta del carrito (solo para usuarios normales logueados) */}
+            <Route 
+                path="/cart" 
+                element={
+                    <ProtectedRoute>
+                        <CartPage />
+                    </ProtectedRoute>
+                } 
+            />
+
+            {/* ⭐ ACTUALIZADO: Rutas protegidas SOLO para ADMIN */}
             <Route 
                 path="/product" 
                 element={
-                    <ProtectedRoute>
+                    <AdminRoute>
                         <ProductForm />
-                    </ProtectedRoute>
+                    </AdminRoute>
                 } 
             />
             <Route 
                 path="/product/:id" 
                 element={
-                    <ProtectedRoute>
+                    <AdminRoute>
                         <ProductForm />
-                    </ProtectedRoute>
+                    </AdminRoute>
                 } 
             />
 
-            {/* Ruta protegida para ver logs */}
+            {/* ⭐ ACTUALIZADO: Ruta de logs SOLO para ADMIN */}
             <Route 
                 path="/logs" 
                 element={
-                    <ProtectedRoute>
+                    <AdminRoute>
                         <Logs />
-                    </ProtectedRoute>
+                    </AdminRoute>
                 } 
             />
 
+            {/* Ruta de perfil para cualquier usuario logueado */}
             <Route 
                 path="/profile"
                 element={

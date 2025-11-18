@@ -256,6 +256,7 @@ userRoutes.post("/login", validateUserLogin, async (req, res) => {
         full_name: user.full_name,
         email: user.email,
         profile_picture: user.profile_picture,
+        role: user.role, // ⭐ AGREGAR ESTO
         token: token
       }
     })
@@ -279,7 +280,8 @@ userRoutes.get("/verify-token", authenticateToken, async (req, res) => {
         id: req.user.id,
         full_name: req.user.full_name,
         email: req.user.email,
-        profile_picture: req.user.profile_picture
+        profile_picture: req.user.profile_picture,
+        role: req.user.role // ⭐ AGREGAR ESTO
       }
     })
   } catch (err) {

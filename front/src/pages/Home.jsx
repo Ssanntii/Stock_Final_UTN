@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
+import { ShoppingCart } from 'lucide-react'
 
 import { fetchProducts, deleteProduct } from '../api/apiConfig'
 import { useStore } from '../store/useStore'
+import { useCartStore } from '../store/useCartStore'
 
 import ProductList from '../components/ProductList'
 import Button from '../components/ui/Button'
@@ -11,9 +13,10 @@ import UserMenu from '../components/ui/UserMenu'
 import logo from '/stock.png'
 
 const Home = () => {
-  const { user } = useStore()
-  const isAuthenticated = user.token !== null && user.email !== null
-
+  const { user, isAuthenticated, isAdmin } = useStore()
+  const { getTotalItems } = useCartStore()
+  const cartItemsCount = getTotalItems()
+  
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -60,9 +63,14 @@ const Home = () => {
                 <h1 className="text-2xl sm:text-3xl font-bold text-white">
                   Gestión de Productos
                 </h1>
-                {isAuthenticated && (
+                {isAuthenticated() && (
                   <p className="text-sm text-slate-300 mt-1">
                     Bienvenido, {user.full_name}!
+                    {isAdmin() && (
+                      <span className="ml-2 px-2 py-0.5 text-xs bg-purple-600 text-white rounded-full">
+                        Admin
+                      </span>
+                    )}
                   </p>
                 )}
               </div>
@@ -70,8 +78,24 @@ const Home = () => {
 
             {/* Menú de usuario o botones de auth */}
             <div className="flex items-center gap-3">
-              {isAuthenticated ? (
-                <UserMenu />
+              {isAuthenticated() ? (
+                <>
+                  {/* Botón del carrito (solo para usuarios normales) */}
+                  {!isAdmin() && (
+                    <Link to="/cart" className="relative">
+                      <Button variant="secondary" size="md" className="relative">
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        Carrito
+                        {cartItemsCount > 0 && (
+                          <span className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-slate-800">
+                            {cartItemsCount > 99 ? '99+' : cartItemsCount}
+                          </span>
+                        )}
+                      </Button>
+                    </Link>
+                  )}
+                  <UserMenu />
+                </>
               ) : (
                 <>
                   <Link to="/auth">
@@ -116,7 +140,8 @@ const Home = () => {
           <ProductList 
             products={products} 
             onDeleteProduct={handleDeleteProduct}
-            isAuthenticated={isAuthenticated}
+            isAuthenticated={isAuthenticated()}
+            isAdmin={isAdmin()}
           />
         )}
       </main>

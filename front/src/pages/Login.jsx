@@ -22,30 +22,27 @@ const Login = () => {
   const { setUser } = useStore()
   const navigate = useNavigate()
 
-  // Estados
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Funciones
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
     try {
-      const body = {
-        email,
-        password
-      }
+      const body = { email, password }
       const data = await loginUser(body)
       
+      // ⭐ IMPORTANTE: Guardar el rol del usuario
       setUser({
         full_name: data.full_name,
         email: data.email,
         profile_picture: data.profile_picture,
-        token: data.token
+        token: data.token,
+        role: data.role // ⭐ Agregar el rol
       })
       
       navigate("/")
@@ -101,7 +98,7 @@ const Login = () => {
 
             {/* Formulario */}
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Input Email con icono */}
+              {/* Input Email */}
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-slate-300">
                   Email
@@ -121,7 +118,7 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Input Password con icono */}
+              {/* Input Password */}
               <div className="space-y-2">
                 <label htmlFor="password" className="block text-sm font-medium text-slate-300">
                   Contraseña

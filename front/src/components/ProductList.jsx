@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 
 import ProductRow from './ProductRow'
 
-const ProductList = ({ products, onDeleteProduct, isAuthenticated }) => {
+const ProductList = ({ products, onDeleteProduct, isAuthenticated, isAdmin }) => { // ⭐ Agregar isAdmin
   return (
     <div className="bg-slate-800 rounded-xl shadow-sm border border-slate-700 overflow-hidden">
       
@@ -37,11 +37,13 @@ const ProductList = ({ products, onDeleteProduct, isAuthenticated }) => {
           </svg>
           <h3 className="text-lg font-medium text-white mb-2">No hay productos</h3>
           <p className="text-sm text-slate-400 mb-4">
+            {/* ⭐ Mensaje condicional según rol */}
             {isAuthenticated 
-              ? 'Comienza creando un nuevo producto.' 
+              ? (isAdmin ? 'Comienza creando un nuevo producto.' : 'Aún no hay productos disponibles para comprar.')
               : 'Aún no hay productos disponibles.'}
           </p>
-          {isAuthenticated && (
+          {/* ⭐ Botón crear solo para admin */}
+          {isAuthenticated && isAdmin && (
             <Link
               to="/product"
               className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
@@ -55,8 +57,8 @@ const ProductList = ({ products, onDeleteProduct, isAuthenticated }) => {
         </div>
       ) : (
         <div className="p-4 sm:p-6">
-          {/* Botón agregar producto cuando hay productos - solo si está autenticado */}
-          {isAuthenticated && (
+          {/* ⭐ Botón agregar producto solo para ADMIN */}
+          {isAuthenticated && isAdmin && (
             <div className="mb-6">
               <Link
                 to="/product"
@@ -78,6 +80,7 @@ const ProductList = ({ products, onDeleteProduct, isAuthenticated }) => {
                 product={product} 
                 onDelete={onDeleteProduct}
                 isAuthenticated={isAuthenticated}
+                isAdmin={isAdmin} // ⭐ Pasar prop isAdmin
               />
             ))}
           </div>
