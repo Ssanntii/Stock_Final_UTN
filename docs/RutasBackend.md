@@ -201,6 +201,49 @@ Returns:
 |Petición erronea|400|La contraseña debe tener al menos 6 caracteres|
 |Error|400|Error de validación o al crear el usuario (ej. email ya existe)|
 
+### ⌛ Registrar un nuevo usuario
+
+- `/users/verify-email`
+
+- Método: POST. Verifica el email del usuario usando un código de 6 dígitos enviado al registro.
+
+Body (req.body):
+```ts
+{
+  email: 'string',
+  verification_code: 'string' // Código enviado por email
+}
+```
+
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Email verificado exitosamente. Ahora puedes iniciar sesión|
+|Petición erronea|400|Email y código de verificación son requeridos|
+|Petición erronea|400|Código de verificación incorrecto|
+|Petición erronea|400|Este usuario ya está verificado|
+|No Encontrado|404|Usuario no encontrado|
+
+📧 Reenviar código de verificación
+
+- `/users/resend-verification`
+
+- Método: POST - Reenvía el código de verificación a un usuario no verificado.
+
+```ts
+{
+  email: 'string'
+}
+```
+
+Returns:
+|Código|Número|Mensaje|
+|:---:|:---:|:---:|
+|OK|200|Código de verificación reenviado exitosamente|
+|Petición erronea|400|Email es requerido|
+|Petición erronea|400|ste usuario ya está verificado|
+|No Encontrado|404|Usuario no encontrado|
+
 ### 🔑 Iniciar sesión (Login)
 - `/users/login` - POST Ruta encargada de autenticar un usuario y generar un token de acceso (JWT).
 
