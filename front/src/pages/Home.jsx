@@ -11,7 +11,7 @@ import UserMenu from '../components/ui/UserMenu'
 import logo from '/stock.png'
 
 const Home = () => {
-  const { user, logout } = useStore()
+  const { user } = useStore()
   const isAuthenticated = user.token !== null && user.email !== null
 
   const [products, setProducts] = useState([])

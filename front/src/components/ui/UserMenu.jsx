@@ -33,8 +33,8 @@ const UserMenu = () => {
   }
 
   const getProfilePhotoUrl = () => {
-    if (user.profile_photo) {
-      return `${import.meta.env.VITE_URL}${user.profile_photo}`
+    if (user.profile_picture) {
+      return `${import.meta.env.VITE_URL}${user.profile_picture}`
     }
     return null
   }

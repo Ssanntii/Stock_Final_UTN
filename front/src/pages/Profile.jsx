@@ -4,7 +4,7 @@ import { useStore } from "../store/useStore"
 import Button from "../components/ui/Button"
 import Input from "../components/ui/Input"
 import { updateUserProfile } from "../api/apiConfig"
-import { User, Camera, Lock, ArrowLeft } from "lucide-react"
+import { User, Camera, Lock, ArrowLeft, X } from "lucide-react"
 import logo from '/stock.png'
 
 const Profile = () => {
@@ -12,8 +12,11 @@ const Profile = () => {
   const API_URL = import.meta.env.VITE_URL
 
   // Estados del formulario
-  const [fullName, setFullName] = useState(user.full_name)
+  const [fullName, setFullName] = useState(user.full_name || "")
   const [profilePicture, setProfilePicture] = useState(null)
+  const [removePhoto, setRemovePhoto] = useState(false)
+  
+  // Preview: usa la foto actual del usuario o el nuevo archivo seleccionado
   const [previewUrl, setPreviewUrl] = useState(
     user.profile_picture ? `${API_URL}${user.profile_picture}` : null
   )
@@ -47,8 +50,17 @@ const Profile = () => {
 
       setProfilePicture(file)
       setPreviewUrl(URL.createObjectURL(file))
+      setRemovePhoto(false) // Si sube una nueva, cancela la eliminación
       setError(null)
     }
+  }
+
+  // Manejar eliminación de foto
+  const handleRemovePhoto = () => {
+    setRemovePhoto(true)
+    setProfilePicture(null)
+    setPreviewUrl(null)
+    setError(null)
   }
 
   // Validar formulario
@@ -93,8 +105,14 @@ const Profile = () => {
       const formData = new FormData()
       formData.append("full_name", fullName.trim())
       
+      // Solo enviar la foto si se seleccionó una nueva
       if (profilePicture) {
         formData.append("profile_picture", profilePicture)
+      }
+
+      // Indicar si se quiere eliminar la foto
+      if (removePhoto) {
+        formData.append("remove_photo", "true")
       }
 
       if (showPasswordSection) {
@@ -111,19 +129,22 @@ const Profile = () => {
         profile_picture: updated.user.profile_picture
       })
 
-      // Actualizar preview con la nueva imagen
+      // Actualizar preview con la nueva imagen (o null si se eliminó)
       if (updated.user.profile_picture) {
         setPreviewUrl(`${API_URL}${updated.user.profile_picture}`)
+      } else {
+        setPreviewUrl(null)
       }
 
       setSuccess("¡Perfil actualizado correctamente! 🎉")
       
-      // Limpiar campos de contraseña
+      // Limpiar estados temporales
       setCurrentPassword("")
       setNewPassword("")
       setConfirmPassword("")
       setShowPasswordSection(false)
       setProfilePicture(null)
+      setRemovePhoto(false)
 
     } catch (err) {
       setError(err.message)
@@ -202,6 +223,18 @@ const Profile = () => {
                   )}
                 </div>
                 
+                {/* Botón para eliminar foto */}
+                {previewUrl && !removePhoto && (
+                  <button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    className="absolute top-0 right-0 bg-red-600 hover:bg-red-700 p-2 rounded-full cursor-pointer transition-colors"
+                    title="Eliminar foto"
+                  >
+                    <X className="w-4 h-4 text-white" />
+                  </button>
+                )}
+
                 {/* Botón de cámara */}
                 <label className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 p-2 rounded-full cursor-pointer transition-colors">
                   <Camera className="w-5 h-5 text-white" />
@@ -215,7 +248,9 @@ const Profile = () => {
                 </label>
               </div>
               <p className="text-sm text-slate-400 mt-3 text-center">
-                Clic en el ícono para cambiar tu foto de perfil<br/>
+                Clic en el ícono de cámara para cambiar tu foto de perfil
+                {previewUrl && <><br/><span className="text-xs">Clic en la X para eliminarla</span></>}
+                <br/>
                 <span className="text-xs">Máximo 5MB - JPG, PNG, GIF, WEBP</span>
               </p>
             </div>

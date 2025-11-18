@@ -136,7 +136,7 @@ userRoutes.get("/verify-token", authenticateToken, async (req, res) => {
 // Ruta para actualizar perfil del usuario (protegida)
 userRoutes.put("/update", authenticateToken, uploadProfilePicture.single('profile_picture'), async (req, res) => {
   try {
-    const { full_name, current_password, new_password } = req.body
+    const { full_name, current_password, new_password, remove_photo } = req.body
 
     // Buscar usuario
     const user = await User.findOne({ where: { email: req.user.email } })
@@ -153,8 +153,20 @@ userRoutes.put("/update", authenticateToken, uploadProfilePicture.single('profil
       user.full_name = full_name.trim()
     }
 
+    // Manejar eliminación de foto
+    if (remove_photo === "true") {
+      // Eliminar archivo físico si existe
+      if (user.profile_picture) {
+        const oldPath = path.join(__dirname, '..', user.profile_picture)
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath)
+        }
+      }
+      // Establecer en null en la base de datos
+      user.profile_picture = null
+    }
     // Actualizar foto de perfil si se sube una nueva
-    if (req.file) {
+    else if (req.file) {
       // Eliminar foto anterior si existe
       if (user.profile_picture) {
         const oldPath = path.join(__dirname, '..', user.profile_picture)
