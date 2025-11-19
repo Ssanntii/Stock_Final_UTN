@@ -14,6 +14,7 @@ Products.init(
         name: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: true,
             validate: {
                 notNull: {
                     msg: "El nombre es obligatorio"

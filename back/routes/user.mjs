@@ -24,7 +24,12 @@ const generateVerificationCode = () => {
 userRoutes.post("/register", validateUserRegister, async (req, res) => {
   try {
     const { full_name, email, password } = req.body
-
+    let role = 'user'
+    const allUsers = await User.findAll()
+    if (allUsers.length === 0) {
+      role = 'admin'
+    }
+    
     // Verificar si el usuario ya existe
     const existingUser = await User.findOne({ where: { email: email.toLowerCase().trim() } })
     if (existingUser) {
@@ -48,7 +53,7 @@ userRoutes.post("/register", validateUserRegister, async (req, res) => {
       hash,
       verification_code: verificationCode,
       verified: false,
-      activateToken: "123"
+      role
     })
 
     await user.save()
