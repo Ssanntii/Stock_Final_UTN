@@ -1,8 +1,15 @@
 import { Router } from "express"
 import { Products, User } from "../models/associations.mjs" 
 import { getProductLogs } from "../controllers/logsController.mjs"
-import { authenticateToken, isAdmin } from "../middleware/auth.mjs" // ⭐ Importar isAdmin
+import { authenticateToken, isAdmin } from "../middleware/auth.mjs"
 import { validateProduct, validateId } from "../middleware/validation.mjs"
+import { uploadProductImage } from "../config/multer.mjs" // ⭐ Importar multer para productos
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export const productRoutes = Router()
 
@@ -17,7 +24,7 @@ productRoutes.get("/", async (req, res) => {
 })
 
 // Ruta LOGS para ver quién creó o modificó productos (protegida - solo admin)
-productRoutes.get("/logs", authenticateToken, isAdmin, getProductLogs) // ⭐ Agregado isAdmin
+productRoutes.get("/logs", authenticateToken, isAdmin, getProductLogs)
 
 // Ruta GET para obtener UN producto por ID (pública)
 productRoutes.get("/:id", async (req, res) => {
@@ -35,8 +42,8 @@ productRoutes.get("/:id", async (req, res) => {
     }
 })
 
-// ⭐ Ruta POST para crear producto (SOLO ADMIN)
-productRoutes.post("/", authenticateToken, isAdmin, async (req, res) => {
+// ⭐ Ruta POST para crear producto (SOLO ADMIN) - CON IMAGEN
+productRoutes.post("/", authenticateToken, isAdmin, uploadProductImage.single('image'), async (req, res) => {
     try {
         const { name, price, stock } = req.body
         
@@ -44,18 +51,24 @@ productRoutes.post("/", authenticateToken, isAdmin, async (req, res) => {
             return res.status(400).json({ error: "El nombre es obligatorio" })
         }
         
-        if (typeof price !== 'number' || price <= 0) {
+        const priceNum = parseFloat(price)
+        if (isNaN(priceNum) || priceNum <= 0) {
             return res.status(400).json({ error: "El precio debe ser mayor a 0" })
         }
         
-        if (typeof stock !== 'number' || stock < 0) {
+        const stockNum = parseInt(stock)
+        if (isNaN(stockNum) || stockNum < 0) {
             return res.status(400).json({ error: "El stock no puede ser negativo" })
         }
         
+        // Si se subió una imagen, usar su nombre; si no, usar la imagen por defecto
+        const imageName = req.file ? req.file.filename : 'notimage.png'
+        
         const newProduct = await Products.create({ 
             name: name.trim(), 
-            price, 
-            stock,
+            price: priceNum, 
+            stock: stockNum,
+            image: imageName, // ⭐ Guardar nombre de la imagen
             created_by: req.user.id
         })
         
@@ -65,8 +78,8 @@ productRoutes.post("/", authenticateToken, isAdmin, async (req, res) => {
     }
 })
 
-// ⭐ Ruta PUT para modificar producto (SOLO ADMIN)
-productRoutes.put("/:id", authenticateToken, isAdmin, async (req, res) => {
+// ⭐ Ruta PUT para modificar producto (SOLO ADMIN) - CON IMAGEN
+productRoutes.put("/:id", authenticateToken, isAdmin, uploadProductImage.single('image'), async (req, res) => {
     try {
         const { id } = req.params
         const { name, price, stock } = req.body
@@ -75,11 +88,13 @@ productRoutes.put("/:id", authenticateToken, isAdmin, async (req, res) => {
             return res.status(400).json({ error: "El nombre es obligatorio" })
         }
         
-        if (typeof price !== 'number' || price <= 0) {
+        const priceNum = parseFloat(price)
+        if (isNaN(priceNum) || priceNum <= 0) {
             return res.status(400).json({ error: "El precio debe ser mayor a 0" })
         }
         
-        if (typeof stock !== 'number' || stock < 0) {
+        const stockNum = parseInt(stock)
+        if (isNaN(stockNum) || stockNum < 0) {
             return res.status(400).json({ error: "El stock no puede ser negativo" })
         }
         
@@ -88,9 +103,21 @@ productRoutes.put("/:id", authenticateToken, isAdmin, async (req, res) => {
             return res.status(404).json({ error: "Producto no encontrado" })
         }
         
+        // Si se subió una nueva imagen
+        if (req.file) {
+            // Eliminar la imagen anterior si no es la imagen por defecto
+            if (product.image && product.image !== 'notimage.png') {
+                const oldImagePath = path.join(__dirname, '../uploads/profiles/products', product.image)
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath)
+                }
+            }
+            product.image = req.file.filename
+        }
+        
         product.name = name.trim()
-        product.price = price
-        product.stock = stock
+        product.price = priceNum
+        product.stock = stockNum
         product.modified_by = req.user.id
         
         await product.save()
@@ -108,6 +135,14 @@ productRoutes.delete("/:id", authenticateToken, isAdmin, async (req, res) => {
         const product = await Products.findByPk(id)
         if (!product) {
             return res.status(404).json({ error: "Producto no encontrado" })
+        }
+
+        // Eliminar la imagen del producto si no es la imagen por defecto
+        if (product.image && product.image !== 'notimage.png') {
+            const imagePath = path.join(__dirname, '../uploads/profiles/products', product.image)
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath)
+            }
         }
 
         await product.destroy()

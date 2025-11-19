@@ -41,6 +41,17 @@ Products.init(
                 min: 0
             }
         },
+        image: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: 'notimage.png',
+            validate: {
+                len: {
+                    args: [0, 255],
+                    msg: "El nombre de la imagen no puede superar 255 caracteres"
+                }
+            }
+        },
         created_by: {
             type: DataTypes.INTEGER,
             allowNull: true,
@@ -64,4 +75,3 @@ Products.init(
         timestamps: true
     }
 )
-

@@ -5,17 +5,27 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Configuración de almacenamiento
-const storage = multer.diskStorage({
+// Configuración de almacenamiento para fotos de perfil
+const storageProfile = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Guardar en carpeta uploads/profiles
     cb(null, path.join(__dirname, '../uploads/profiles'))
   },
   filename: (req, file, cb) => {
-    // Generar nombre único: user_id + timestamp + extension
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
     const ext = path.extname(file.originalname)
     cb(null, `profile-${uniqueSuffix}${ext}`)
+  }
+})
+
+// Configuración de almacenamiento para imágenes de productos
+const storageProduct = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../uploads/profiles/products'))
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    const ext = path.extname(file.originalname)
+    cb(null, `product-${uniqueSuffix}${ext}`)
   }
 })
 
@@ -32,9 +42,18 @@ const fileFilter = (req, file, cb) => {
   }
 }
 
-// Configuración de multer
+// Configuración de multer para fotos de perfil
 export const uploadProfilePicture = multer({
-  storage: storage,
+  storage: storageProfile,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // Límite de 5MB
+  },
+  fileFilter: fileFilter
+})
+
+// Configuración de multer para imágenes de productos
+export const uploadProductImage = multer({
+  storage: storageProduct,
   limits: {
     fileSize: 5 * 1024 * 1024 // Límite de 5MB
   },

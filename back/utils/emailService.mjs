@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 export const sendVerificationEmail = async (email, fullName, verificationCode) => {
   try {
     const mailOptions = {
-      from: `"Gestión de Productos" <${process.env.EMAIL_USER}>`,
+      from: `"Gestock" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Verifica tu cuenta - Código de verificación',
       html: `
