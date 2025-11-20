@@ -3,7 +3,7 @@ import { Products, User } from "../models/associations.mjs"
 import { getProductLogs } from "../controllers/logsController.mjs"
 import { authenticateToken, isAdmin } from "../middleware/auth.mjs"
 import { validateProduct, validateId } from "../middleware/validation.mjs"
-import { uploadProductImage } from "../config/multer.mjs" // ⭐ Importar multer para productos
+import { uploadProductImage } from "../config/multer.mjs"
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -42,7 +42,7 @@ productRoutes.get("/:id", async (req, res) => {
     }
 })
 
-// ⭐ Ruta POST para crear producto (SOLO ADMIN) - CON IMAGEN
+// Ruta POST para crear producto (SOLO ADMIN) - CON IMAGEN
 productRoutes.post("/", authenticateToken, isAdmin, uploadProductImage.single('image'), async (req, res) => {
     try {
         const { name, price, stock } = req.body
@@ -68,7 +68,7 @@ productRoutes.post("/", authenticateToken, isAdmin, uploadProductImage.single('i
             name: name.trim(), 
             price: priceNum, 
             stock: stockNum,
-            image: imageName, // ⭐ Guardar nombre de la imagen
+            image: imageName,
             created_by: req.user.id
         })
         
@@ -78,11 +78,11 @@ productRoutes.post("/", authenticateToken, isAdmin, uploadProductImage.single('i
     }
 })
 
-// ⭐ Ruta PUT para modificar producto (SOLO ADMIN) - CON IMAGEN
+// ✅ Ruta PUT mejorada con soporte para eliminar imagen
 productRoutes.put("/:id", authenticateToken, isAdmin, uploadProductImage.single('image'), async (req, res) => {
     try {
         const { id } = req.params
-        const { name, price, stock } = req.body
+        const { name, price, stock, remove_image } = req.body
         
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
             return res.status(400).json({ error: "El nombre es obligatorio" })
@@ -103,8 +103,19 @@ productRoutes.put("/:id", authenticateToken, isAdmin, uploadProductImage.single(
             return res.status(404).json({ error: "Producto no encontrado" })
         }
         
+        // ✅ Si se marca para eliminar imagen
+        if (remove_image === 'true') {
+            // Eliminar la imagen anterior si no es la imagen por defecto
+            if (product.image && product.image !== 'notimage.png') {
+                const oldImagePath = path.join(__dirname, '../uploads/profiles/products', product.image)
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath)
+                }
+            }
+            product.image = 'notimage.png'
+        }
         // Si se subió una nueva imagen
-        if (req.file) {
+        else if (req.file) {
             // Eliminar la imagen anterior si no es la imagen por defecto
             if (product.image && product.image !== 'notimage.png') {
                 const oldImagePath = path.join(__dirname, '../uploads/profiles/products', product.image)
@@ -127,7 +138,7 @@ productRoutes.put("/:id", authenticateToken, isAdmin, uploadProductImage.single(
     }
 })
 
-// ⭐ Ruta DELETE para eliminar un producto (SOLO ADMIN)
+// Ruta DELETE para eliminar un producto (SOLO ADMIN)
 productRoutes.delete("/:id", authenticateToken, isAdmin, async (req, res) => {
     try {
         const { id } = req.params

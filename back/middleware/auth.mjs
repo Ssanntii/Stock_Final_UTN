@@ -25,12 +25,13 @@ export const authenticateToken = async (req, res, next) => {
       })
     }
 
+    // ✅ Verificar token con manejo de expiración
     const decoded = jwt.verify(token, process.env.SECRET)
     
-    // ⭐ INCLUIR EL ROL en la búsqueda
+    // Buscar usuario incluyendo el rol
     const user = await User.findOne({ 
       where: { email: decoded.email },
-      attributes: ['id', 'full_name', 'email', 'verified', 'role'] // ← Agregar 'role'
+      attributes: ['id', 'full_name', 'email', 'verified', 'role', 'profile_picture']
     })
     
     if (!user) {
@@ -65,15 +66,10 @@ export const authenticateToken = async (req, res, next) => {
   }
 }
 
-// ⭐ NUEVO: Middleware para verificar que el usuario sea ADMIN
+/**
+ * ✅ Middleware para verificar que el usuario sea ADMIN (sin duplicación)
+ */
 export const isAdmin = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({
-      error: "Acceso denegado",
-      msg: "Solo los administradores pueden realizar esta acción"
-    })
-  }
-
   if (req.user.role !== 'admin') {
     return res.status(403).json({
       error: "Acceso denegado",

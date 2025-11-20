@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import { validateUserRegister, validateUserLogin } from '../middleware/validation.mjs'
 import { authenticateToken } from '../middleware/auth.mjs'
 import { uploadProfilePicture } from '../config/multer.mjs'
-import { sendVerificationEmail } from '../utils/emailService.mjs' // Necesitarás crear este archivo
+import { sendVerificationEmail } from '../utils/emailService.mjs'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -20,11 +20,18 @@ const generateVerificationCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
+// ✅ Función para crear token JWT con expiración
+const createToken = (email, expiresIn = '7d') => {
+  return jwt.sign({ email }, process.env.SECRET, { expiresIn })
+}
+
 // Ruta REGISTER (con validaciones y verificación por email)
 userRoutes.post("/register", validateUserRegister, async (req, res) => {
   try {
     const { full_name, email, password } = req.body
     let role = 'user'
+    
+    // El primer usuario es admin
     const allUsers = await User.findAll()
     if (allUsers.length === 0) {
       role = 'admin'
@@ -63,7 +70,7 @@ userRoutes.post("/register", validateUserRegister, async (req, res) => {
       await sendVerificationEmail(user.email, user.full_name, verificationCode)
     } catch (emailError) {
       console.error('Error al enviar email:', emailError)
-      // Opcional: podrías eliminar el usuario si el email falla
+      // Opcional: eliminar el usuario si el email falla
       // await user.destroy()
       return res.status(500).json({
         error: true,
@@ -73,7 +80,8 @@ userRoutes.post("/register", validateUserRegister, async (req, res) => {
     
     res.json({ 
       error: false, 
-      msg: "Usuario creado exitosamente. Revisa tu email para verificar tu cuenta." 
+      msg: "Usuario creado exitosamente. Revisa tu email para verificar tu cuenta.",
+      email: user.email // ✅ Enviar email para uso en frontend
     })
 
   } catch (err) {
@@ -85,7 +93,7 @@ userRoutes.post("/register", validateUserRegister, async (req, res) => {
   }
 })
 
-// Ruta para VERIFICAR EMAIL
+// ✅ Ruta para VERIFICAR EMAIL
 userRoutes.post("/verify-email", async (req, res) => {
   try {
     const { email, verification_code } = req.body
@@ -120,6 +128,15 @@ userRoutes.post("/verify-email", async (req, res) => {
       })
     }
 
+    // ✅ Verificar si el código expiró (15 minutos)
+    if (user.verification_code_expires && new Date() > user.verification_code_expires) {
+      return res.status(400).json({
+        error: true,
+        msg: "El código de verificación ha expirado. Solicita uno nuevo.",
+        expired: true
+      })
+    }
+
     // Verificar código
     if (user.verification_code !== verification_code) {
       return res.status(400).json({
@@ -130,7 +147,8 @@ userRoutes.post("/verify-email", async (req, res) => {
 
     // Marcar como verificado
     user.verified = true
-    user.verification_code = null // Limpiar el código
+    user.verification_code = null
+    user.verification_code_expires = null
     await user.save()
 
     res.json({
@@ -147,7 +165,7 @@ userRoutes.post("/verify-email", async (req, res) => {
   }
 })
 
-// Ruta para REENVIAR código de verificación
+// ✅ Ruta para REENVIAR código de verificación
 userRoutes.post("/resend-verification", async (req, res) => {
   try {
     const { email } = req.body
@@ -184,6 +202,7 @@ userRoutes.post("/resend-verification", async (req, res) => {
     // Generar nuevo código
     const newVerificationCode = generateVerificationCode()
     user.verification_code = newVerificationCode
+    user.verification_code_expires = new Date(Date.now() + 15 * 60 * 1000) // 15 minutos
     await user.save()
 
     // Enviar email
@@ -211,7 +230,7 @@ userRoutes.post("/resend-verification", async (req, res) => {
   }
 })
 
-// Ruta LOGIN (con validaciones y verificación de email)
+// ✅ Ruta LOGIN mejorada (con verificación y redirección)
 userRoutes.post("/login", validateUserLogin, async (req, res) => {
   try {
     const { email, password } = req.body
@@ -230,14 +249,6 @@ userRoutes.post("/login", validateUserLogin, async (req, res) => {
       })
     }
 
-    // VERIFICAR SI EL EMAIL ESTÁ VERIFICADO
-    if (!user.verified) {
-      return res.status(403).json({
-        error: true,
-        msg: "Por favor verifica tu email antes de iniciar sesión"
-      })
-    }
-
     // Verificar contraseña
     const checkPasswd = await bcrypt.compare(password, user.hash)
 
@@ -248,12 +259,30 @@ userRoutes.post("/login", validateUserLogin, async (req, res) => {
       })
     }
 
-    // Crear token
-    const payload = {
-      email: user.email
+    // ✅ VERIFICAR SI EL EMAIL ESTÁ VERIFICADO
+    if (!user.verified) {
+      // Reenviar código automáticamente
+      const newCode = generateVerificationCode()
+      user.verification_code = newCode
+      user.verification_code_expires = new Date(Date.now() + 15 * 60 * 1000)
+      await user.save()
+
+      try {
+        await sendVerificationEmail(user.email, user.full_name, newCode)
+      } catch (emailError) {
+        console.error('Error al enviar email:', emailError)
+      }
+
+      return res.status(403).json({
+        error: true,
+        msg: "Tu cuenta no está verificada. Te hemos enviado un nuevo código de verificación a tu email.",
+        needsVerification: true,
+        email: user.email
+      })
     }
 
-    const token = jwt.sign(payload, process.env.SECRET)
+    // Crear token con expiración
+    const token = createToken(user.email, '7d')
 
     res.json({
       error: false,
@@ -261,7 +290,7 @@ userRoutes.post("/login", validateUserLogin, async (req, res) => {
         full_name: user.full_name,
         email: user.email,
         profile_picture: user.profile_picture,
-        role: user.role, // ⭐ AGREGAR ESTO
+        role: user.role,
         token: token
       }
     })
@@ -286,7 +315,7 @@ userRoutes.get("/verify-token", authenticateToken, async (req, res) => {
         full_name: req.user.full_name,
         email: req.user.email,
         profile_picture: req.user.profile_picture,
-        role: req.user.role // ⭐ AGREGAR ESTO
+        role: req.user.role
       }
     })
   } catch (err) {
