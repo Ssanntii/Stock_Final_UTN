@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router'
 
 import { loginUser } from '../api/apiConfig'
 import { useStore } from '../store/useStore'
@@ -21,11 +21,23 @@ const Legend = () => {
 const Login = () => {
   const { setUser } = useStore()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(location.state?.message || null)
+
+  // Limpiar mensaje de éxito después de 5 segundos
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [successMessage])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -36,18 +48,30 @@ const Login = () => {
       const body = { email, password }
       const data = await loginUser(body)
       
-      // ⭐ IMPORTANTE: Guardar el rol del usuario
+      // Guardar el usuario con el rol
       setUser({
         full_name: data.full_name,
         email: data.email,
         profile_picture: data.profile_picture,
         token: data.token,
-        role: data.role // ⭐ Agregar el rol
+        role: data.role
       })
       
       navigate("/")
     } catch (error) {
-      setError(error.message || "Error al iniciar sesión")
+      const errorData = error.response?.data || {}
+      
+      // ✅ Si el error indica que necesita verificación, redirigir
+      if (errorData.needsVerification) {
+        navigate('/auth/verify', { 
+          state: { 
+            email: errorData.email || email,
+            message: errorData.msg || 'Por favor verifica tu email antes de continuar'
+          } 
+        })
+      } else {
+        setError(error.message || "Error al iniciar sesión")
+      }
     } finally {
       setLoading(false)
     }
@@ -83,6 +107,18 @@ const Login = () => {
               <h2 className="text-3xl font-bold text-white mb-2">Bienvenido</h2>
               <p className="text-slate-400">Inicia sesión en tu cuenta</p>
             </div>
+
+            {/* Mensaje de éxito */}
+            {successMessage && (
+              <div className="mb-6 bg-green-900/30 border border-green-500/50 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-green-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-green-300 text-sm">{successMessage}</p>
+                </div>
+              </div>
+            )}
 
             {/* Mensaje de error */}
             {error && (

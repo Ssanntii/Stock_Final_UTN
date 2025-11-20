@@ -206,7 +206,7 @@ const Profile = () => {
         <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 lg:p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
             
-            {/* Foto de perfil */}
+            {/* ✅ Foto de perfil con botones reposicionados */}
             <div className="flex flex-col items-center">
               <div className="relative">
                 <div className="w-32 h-32 rounded-full overflow-hidden bg-slate-700 border-4 border-slate-600">
@@ -223,20 +223,20 @@ const Profile = () => {
                   )}
                 </div>
                 
-                {/* Botón para eliminar foto */}
+                {/* ✅ Botón para eliminar foto - ESQUINA SUPERIOR IZQUIERDA */}
                 {previewUrl && !removePhoto && (
                   <button
                     type="button"
                     onClick={handleRemovePhoto}
-                    className="absolute top-0 right-0 bg-red-600 hover:bg-red-700 p-2 rounded-full cursor-pointer transition-colors"
+                    className="absolute top-0 left-0 bg-red-600 hover:bg-red-700 p-2 rounded-full cursor-pointer transition-colors shadow-lg"
                     title="Eliminar foto"
                   >
                     <X className="w-4 h-4 text-white" />
                   </button>
                 )}
 
-                {/* Botón de cámara */}
-                <label className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 p-2 rounded-full cursor-pointer transition-colors">
+                {/* ✅ Botón de cámara - ESQUINA INFERIOR DERECHA */}
+                <label className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 p-2 rounded-full cursor-pointer transition-colors shadow-lg">
                   <Camera className="w-5 h-5 text-white" />
                   <input
                     type="file"

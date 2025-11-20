@@ -23,6 +23,8 @@ const ProductForm = () => {
   })
   
   const [imagePreview, setImagePreview] = useState(null)
+  const [currentImage, setCurrentImage] = useState(null) // ✅ Imagen actual del producto
+  const [removeImage, setRemoveImage] = useState(false) // ✅ Flag para eliminar imagen
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
@@ -46,9 +48,11 @@ const ProductForm = () => {
         image: null
       })
       
-      // Si el producto tiene una imagen, mostrarla en el preview
-      if (product.image) {
-        setImagePreview(`http://localhost:3000/uploads/profiles/products/${product.image}`)
+      // ✅ Guardar imagen actual si existe
+      if (product.image && product.image !== 'notimage.png') {
+        const imageUrl = `${import.meta.env.VITE_URL}/uploads/profiles/products/${product.image}`
+        setCurrentImage(product.image)
+        setImagePreview(imageUrl)
       }
     } catch (err) {
       setError(err.message)
@@ -103,16 +107,19 @@ const ProductForm = () => {
       }
       reader.readAsDataURL(file)
       
+      setRemoveImage(false) // ✅ Si carga nueva imagen, cancela la eliminación
       setError(null)
     }
   }
 
+  // ✅ Manejar eliminación de imagen
   const handleRemoveImage = () => {
     setFormData(prev => ({
       ...prev,
       image: null
     }))
     setImagePreview(null)
+    setRemoveImage(true) // ✅ Marcar para eliminar del servidor
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -157,9 +164,14 @@ const ProductForm = () => {
       formDataToSend.append('price', parseFloat(formData.price))
       formDataToSend.append('stock', parseInt(formData.stock) || 0)
       
-      // Solo agregar la imagen si se seleccionó una nueva
+      // ✅ Solo agregar imagen si se seleccionó una nueva
       if (formData.image) {
         formDataToSend.append('image', formData.image)
+      }
+
+      // ✅ Si se marcó para eliminar, enviar flag
+      if (removeImage && isEditing) {
+        formDataToSend.append('remove_image', 'true')
       }
 
       if (isEditing) {
@@ -258,7 +270,7 @@ const ProductForm = () => {
               
               <div className="space-y-4">
                 {/* Preview de la imagen */}
-                {imagePreview && (
+                {imagePreview && !removeImage && (
                   <div className="relative w-full max-w-xs">
                     <img 
                       src={imagePreview} 
@@ -269,7 +281,8 @@ const ProductForm = () => {
                       type="button"
                       onClick={handleRemoveImage}
                       disabled={submitting}
-                      className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors disabled:opacity-50"
+                      className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors disabled:opacity-50 shadow-lg"
+                      title="Eliminar imagen"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -299,15 +312,23 @@ const ProductForm = () => {
                     {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
                   </label>
                   
-                  {!imagePreview && (
+                  {!imagePreview && !removeImage && (
                     <span className="text-sm text-slate-400">
-                      Si no seleccionas una imagen, se usará una por defecto
+                      {isEditing && currentImage 
+                        ? 'Imagen actual será mantenida' 
+                        : 'Si no seleccionas una imagen, se usará una por defecto'}
+                    </span>
+                  )}
+
+                  {removeImage && (
+                    <span className="text-sm text-red-400">
+                      ✓ La imagen será eliminada al guardar
                     </span>
                   )}
                 </div>
                 
                 <p className="text-xs text-slate-400">
-                  Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 5MB
+                  Formatos aceptados: JPG, PNG, GIF, WEBP. Tamaño máximo: 5MB
                 </p>
               </div>
             </div>

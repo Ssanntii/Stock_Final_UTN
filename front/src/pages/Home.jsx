@@ -63,14 +63,10 @@ const Home = () => {
                 <h1 className="text-2xl sm:text-3xl font-bold text-white">
                   Gestión de Productos
                 </h1>
+                {/* ✅ Mensaje de bienvenida SIN badge de admin */}
                 {isAuthenticated() && (
                   <p className="text-sm text-slate-300 mt-1">
                     Bienvenido, {user.full_name}!
-                    {isAdmin() && (
-                      <span className="ml-2 px-2 py-0.5 text-xs bg-purple-600 text-white rounded-full">
-                        Admin
-                      </span>
-                    )}
                   </p>
                 )}
               </div>

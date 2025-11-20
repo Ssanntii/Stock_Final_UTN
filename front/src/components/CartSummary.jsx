@@ -1,7 +1,7 @@
 import { ShoppingBag } from 'lucide-react'
 import { useCartStore } from '../store/useCartStore'
 
-const CartSummary = ({ onCheckout }) => {
+const CartSummary = ({ onCheckout, loading = false }) => {
   const { getTotalItems, getTotalPrice } = useCartStore()
 
   const totalItems = getTotalItems()
@@ -43,11 +43,20 @@ const CartSummary = ({ onCheckout }) => {
       {/* Botón de finalizar compra */}
       <button
         onClick={onCheckout}
-        disabled={totalItems === 0}
-        className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+        disabled={totalItems === 0 || loading}
+        className="w-full bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
       >
-        <ShoppingBag className="w-5 h-5" />
-        Finalizar Compra
+        {loading ? (
+          <>
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <span>Procesando...</span>
+          </>
+        ) : (
+          <>
+            <ShoppingBag className="w-5 h-5" />
+            Finalizar Compra
+          </>
+        )}
       </button>
 
       {/* Información adicional */}

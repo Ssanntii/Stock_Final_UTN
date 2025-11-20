@@ -19,7 +19,7 @@ const getAuthToken = () => {
   }
 }
 
-// Wrapper completo para fetch
+// Wrapper mejorado para fetch con mejor manejo de errores
 const apiRequest = async (endpoint, options = {}) => {
   const token = getAuthToken()
 
@@ -27,7 +27,7 @@ const apiRequest = async (endpoint, options = {}) => {
     method: options.method || 'GET',
     headers: {
       ...(options.body instanceof FormData
-        ? {} // ❗ Si es FormData NO poner Content-Type
+        ? {} // Si es FormData NO poner Content-Type
         : { 'Content-Type': 'application/json' }),
       ...(token && { Authorization: token }),
       ...(options.headers || {})
@@ -51,18 +51,22 @@ const apiRequest = async (endpoint, options = {}) => {
 
   const data = await response.json()
 
-  // Error desde backend
+  // Mejorado: Incluir data completa en el error para acceso a needsVerification, etc.
   if (!response.ok || data.error) {
-    if (Array.isArray(data.errors)) {
-      throw new Error(data.errors.join(', '))
-    }
-
-    throw new Error(
+    const error = new Error(
       data.msg ||
       data.message ||
       data.error ||
       `Error ${response.status}`
     )
+    error.response = { data, status: response.status }
+    
+    // Si es un array de errores, unirlos
+    if (Array.isArray(data.errors)) {
+      error.message = data.errors.join(', ')
+    }
+    
+    throw error
   }
 
   return data
@@ -121,9 +125,37 @@ export const loginUser = async (credentials) => {
 export const verifyToken = () =>
   apiRequest('/users/verify-token')
 
+// ✅ Funciones para verificación de email
+export const verifyEmail = (email, code) =>
+  apiRequest('/users/verify-email', {
+    method: 'POST',
+    body: { email, verification_code: code }
+  })
+
+export const resendVerificationCode = (email) =>
+  apiRequest('/users/resend-verification', {
+    method: 'POST',
+    body: { email }
+  })
+
 // ======================================================
 // ======================= LOGS =========================
 // ======================================================
 
 export const fetchProductLogs = () =>
   apiRequest('/products/logs')
+
+// ======================================================
+// ==================== CHECKOUT ========================
+// ======================================================
+
+/**
+ * ✅ Procesar compra
+ * @param {Array} items - Array de { id, quantity }
+ * @returns {Promise} Detalles de la orden
+ */
+export const processCheckout = (items) =>
+  apiRequest('/checkout', {
+    method: 'POST',
+    body: { items }
+  })

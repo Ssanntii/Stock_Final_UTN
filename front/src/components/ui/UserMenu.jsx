@@ -4,7 +4,7 @@ import { useStore } from '../../store/useStore'
 import { User, FileText, LogOut } from 'lucide-react'
 
 const UserMenu = () => {
-  const { user, logout } = useStore()
+  const { user, logout, isAdmin } = useStore()
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef(null)
@@ -82,9 +82,17 @@ const UserMenu = () => {
 
               {/* Info del usuario */}
               <div className="flex-1 min-w-0">
-                <p className="text-white font-semibold text-sm truncate">
-                  {user.full_name}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-white font-semibold text-sm truncate">
+                    {user.full_name}
+                  </p>
+                  {/* ✅ Badge de admin SOLO aquí */}
+                  {isAdmin() && (
+                    <span className="px-2 py-0.5 text-xs bg-purple-600 text-white rounded-full shrink-0">
+                      Admin
+                    </span>
+                  )}
+                </div>
                 <p className="text-slate-400 text-xs truncate">
                   {user.email}
                 </p>
@@ -103,14 +111,17 @@ const UserMenu = () => {
               <span className="text-sm font-medium">Mi Perfil</span>
             </Link>
 
-            <Link
-              to="/logs"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 text-slate-300 hover:text-white transition-colors"
-            >
-              <FileText className="w-5 h-5" />
-              <span className="text-sm font-medium">Ver Historial</span>
-            </Link>
+            {/* ✅ Ver Historial SOLO para admin */}
+            {isAdmin() && (
+              <Link
+                to="/logs"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 text-slate-300 hover:text-white transition-colors"
+              >
+                <FileText className="w-5 h-5" />
+                <span className="text-sm font-medium">Ver Historial</span>
+              </Link>
+            )}
 
             <div className="border-t border-slate-700 my-2"></div>
 

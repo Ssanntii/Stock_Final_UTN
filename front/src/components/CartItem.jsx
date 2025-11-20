@@ -1,8 +1,12 @@
+import { useState } from 'react'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { useCartStore } from '../store/useCartStore'
 
 const CartItem = ({ item }) => {
   const { incrementQuantity, decrementQuantity, removeItem } = useCartStore()
+  const [imageError, setImageError] = useState(false)
+  
+  const API_URL = import.meta.env.VITE_URL
 
   const formatPrice = (price) => {
     return Number(price).toFixed(2).replace('.', ',')
@@ -10,11 +14,40 @@ const CartItem = ({ item }) => {
 
   const subtotal = item.price * item.quantity
 
+  // ✅ Construir URL de imagen correctamente
+  const getImageUrl = () => {
+    if (!item.image || item.image === 'notimage.png') {
+      return null
+    }
+    return `${API_URL}/uploads/profiles/products/${item.image}`
+  }
+
+  const imageUrl = getImageUrl()
+
   return (
     <div className="flex flex-col sm:flex-row gap-4 p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors">
+      
+      {/* ✅ Imagen del producto */}
+      <div className="w-24 h-24 shrink-0 bg-slate-800 rounded-lg overflow-hidden border border-slate-600">
+        {imageUrl && !imageError ? (
+          <img 
+            src={imageUrl}
+            alt={item.name}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <svg className="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        )}
+      </div>
+
       {/* Información del producto */}
-      <div className="flex-1">
-        <h3 className="font-semibold text-white text-lg mb-1">
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-white text-lg mb-1 truncate">
           {item.name}
         </h3>
         <p className="text-green-400 font-medium">

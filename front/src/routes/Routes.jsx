@@ -2,16 +2,17 @@ import { Routes, Route } from "react-router"
 
 import Public from '../components/layouts/Public'
 import ProtectedRoute from '../components/ProtectedRoute'
-import AdminRoute from '../components/AdminRoute' // ⭐ NUEVO
+import AdminRoute from '../components/AdminRoute'
 
 import Home from "../pages/Home"
 import Login from "../pages/Login"
 import Register from "../pages/Register"
+import VerificationPage from "../pages/VerificationPage" // ✅ NUEVO
 import ProductForm from "../pages/AddEditProduct"
 import Logs from "../pages/Logs"
 import NotFoundPage from "../pages/NotFoundPage"
 import Profile from '../pages/Profile'
-import CartPage from '../pages/CartPage' // ⭐ NUEVO
+import CartPage from '../pages/CartPage'
 
 const AppRoutes = () => {
     return (
@@ -23,9 +24,10 @@ const AppRoutes = () => {
             <Route element={<Public />} path="/auth">
                 <Route index element={<Login />} />
                 <Route path="register" element={<Register />} />
+                <Route path="verify" element={<VerificationPage />} /> {/* ✅ NUEVO */}
             </Route>
 
-            {/* ⭐ NUEVA: Ruta del carrito (solo para usuarios normales logueados) */}
+            {/* Ruta del carrito (solo para usuarios normales logueados) */}
             <Route 
                 path="/cart" 
                 element={
@@ -35,7 +37,7 @@ const AppRoutes = () => {
                 } 
             />
 
-            {/* ⭐ ACTUALIZADO: Rutas protegidas SOLO para ADMIN */}
+            {/* Rutas protegidas SOLO para ADMIN */}
             <Route 
                 path="/product" 
                 element={
@@ -53,7 +55,7 @@ const AppRoutes = () => {
                 } 
             />
 
-            {/* ⭐ ACTUALIZADO: Ruta de logs SOLO para ADMIN */}
+            {/* Ruta de logs SOLO para ADMIN */}
             <Route 
                 path="/logs" 
                 element={

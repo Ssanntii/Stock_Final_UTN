@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 
 import { registerUser } from '../api/apiConfig'
-import VerificationModal from './VerificationModal'
 
-import { Mail, Lock, User, UserPlus, ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { Mail, Lock, User, UserPlus, ArrowLeft } from 'lucide-react'
 import logo from '/stock.png'
 
 const Legend = () => {
@@ -28,19 +27,12 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(false)
-  
-  // Estados para verificación
-  const [showVerificationModal, setShowVerificationModal] = useState(false)
-  const [verificationLoading, setVerificationLoading] = useState(false)
-  const [verificationError, setVerificationError] = useState(null)
 
-  // Función para crear usuario (sin verificar aún)
+  // ✅ Función para crear usuario y redirigir a verificación
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    setSuccess(false)
 
     try {
       const body = {
@@ -49,10 +41,15 @@ const Register = () => {
         password,
         confirmPassword
       }
-      await registerUser(body)
+      const data = await registerUser(body)
 
-      // Mostrar modal de verificación en lugar de redirigir
-      setShowVerificationModal(true)
+      // ✅ Redirigir a la ruta de verificación con el email
+      navigate('/auth/verify', { 
+        state: { 
+          email: data.email || email,
+          message: 'Te hemos enviado un código de verificación a tu email'
+        } 
+      })
 
     } catch (error) {
       console.log("Hubo un error al crear el usuario: ", error)
@@ -62,53 +59,6 @@ const Register = () => {
     }
   }
 
-  // Función para verificar el código
-  const handleVerifyCode = async (code) => {
-  setVerificationLoading(true)
-  setVerificationError(null)
-
-  try {
-    const response = await fetch('http://localhost:3000/users/verify-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        verification_code: code
-      })
-    })
-
-    const data = await response.json()
-
-    // ✅ Cambiar esta parte - tu backend usa "error" no "ok"
-    if (data.error) {
-      throw new Error(data.msg || 'Código de verificación incorrecto')
-    }
-
-    // Verificación exitosa
-    setSuccess(true)
-    setShowVerificationModal(false)
-    
-    // Limpiar campos
-    setFullName("")
-    setEmail("")
-    setPassword("")
-    setConfirmPassword("")
-
-    // Redirigir al login después de 2 segundos
-    setTimeout(() => {
-      navigate('/auth')
-    }, 2000)
-
-  } catch (error) {
-    console.log("Error al verificar código: ", error)
-    setVerificationError(error.message || "Error al verificar el código")
-  } finally {
-    setVerificationLoading(false)
-  }
-  }
-
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col">
       {/* Header minimalista */}
@@ -116,7 +66,7 @@ const Register = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link to="/" className="flex items-center gap-3 w-fit group">
             <ArrowLeft className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
-            <img src={logo} alt='logo' className="w-10 h-10 flex-shrink-0" />
+            <img src={logo} alt='logo' className="w-10 h-10 shrink-0" />
             <span className="text-lg font-semibold text-white">Gestión de Productos</span>
           </Link>
         </div>
@@ -144,7 +94,7 @@ const Register = () => {
             {error && (
               <div className="mb-6 bg-red-900/30 border border-red-500/50 rounded-xl p-4">
                 <div className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-red-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <p className="text-red-300 text-sm">{error}</p>
@@ -152,18 +102,8 @@ const Register = () => {
               </div>
             )}
 
-            {/* Mensaje de éxito */}
-            {success && (
-              <div className="mb-6 bg-green-900/30 border border-green-500/50 rounded-xl p-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-green-300 text-sm">¡Registro exitoso! Redirigiendo al login...</p>
-                </div>
-              </div>
-            )}
-
             {/* Formulario */}
-            <div className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {/* Input Nombre completo con icono */}
               <div className="space-y-2">
                 <label htmlFor="full_name" className="block text-sm font-medium text-slate-300">
@@ -246,9 +186,9 @@ const Register = () => {
 
               {/* Botón de submit */}
               <button
-                onClick={handleSubmit}
+                type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 mt-6"
+                className="w-full bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 mt-6"
               >
                 {loading ? (
                   <>
@@ -262,7 +202,7 @@ const Register = () => {
                   </>
                 )}
               </button>
-            </div>
+            </form>
 
             {/* Divider */}
             <div className="mt-8 pt-6 border-t border-slate-700/50">
@@ -271,16 +211,6 @@ const Register = () => {
           </div>
         </div>
       </main>
-
-      {/* Modal de Verificación */}
-      <VerificationModal
-        isOpen={showVerificationModal}
-        onClose={() => setShowVerificationModal(false)}
-        email={email}
-        onVerify={handleVerifyCode}
-        loading={verificationLoading}
-        error={verificationError}
-      />
     </div>
   )
 }

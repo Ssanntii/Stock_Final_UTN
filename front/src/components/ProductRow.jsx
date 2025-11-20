@@ -7,7 +7,10 @@ import { useCartStore } from '../store/useCartStore'
 
 const ProductRow = ({ product, onDelete, isAuthenticated, isAdmin }) => {
   const [showModal, setShowModal] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const { addItem, isInCart } = useCartStore()
+  
+  const API_URL = import.meta.env.VITE_URL
   
   const formatPrice = (price) => {
     return Number(price).toFixed(2).replace('.', ',')
@@ -37,34 +40,66 @@ const ProductRow = ({ product, onDelete, isAuthenticated, isAdmin }) => {
 
   const inCart = isInCart(product.id)
 
+  // ✅ Construir URL de imagen correctamente
+  const getImageUrl = () => {
+    if (!product.image || product.image === 'notimage.png') {
+      return null
+    }
+    return `${API_URL}/uploads/profiles/products/${product.image}`
+  }
+
+  const imageUrl = getImageUrl()
+
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors">
-        {/* Información del producto */}
-        <div className="flex-1 mb-3 sm:mb-0">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <h3 className="font-semibold text-white text-lg">
-              {product.name}
-            </h3>
-            {/* Badge si está en el carrito */}
-            {inCart && !isAdmin && (
-              <span className="text-xs px-2 py-1 bg-blue-600 text-white rounded-full w-fit">
-                En el carrito
-              </span>
+      {/* ✅ Componente con mayor altura para imágenes más grandes */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors gap-4 min-h-[140px]">
+        
+        {/* ✅ Imagen del producto - MÁS GRANDE (128x128 = 32rem) */}
+        <div className="flex items-center gap-4 flex-1">
+          <div className="w-32 h-32 shrink-0 bg-slate-800 rounded-lg overflow-hidden border border-slate-600">
+            {imageUrl && !imageError ? (
+              <img 
+                src={imageUrl}
+                alt={product.name}
+                className="w-full h-full object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <svg className="w-16 h-16 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
             )}
           </div>
-          
-          <div className="flex items-center gap-4 mt-2 text-sm">
-            <span className="font-medium text-green-400">
-              ${formatPrice(product.price)}
-            </span>
-            <span className={`font-medium ${
-              product.stock > 10 ? 'text-green-400' : 
-              product.stock > 0 ? 'text-yellow-400' : 
-              'text-red-400'
-            }`}>
-              Stock: {product.stock}
-            </span>
+
+          {/* Información del producto */}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <h3 className="font-semibold text-white text-lg truncate">
+                {product.name}
+              </h3>
+              {/* Badge si está en el carrito */}
+              {inCart && !isAdmin && (
+                <span className="text-xs px-2 py-1 bg-blue-600 text-white rounded-full w-fit">
+                  En el carrito
+                </span>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-4 mt-2 text-sm">
+              <span className="font-medium text-green-400">
+                ${formatPrice(product.price)}
+              </span>
+              <span className={`font-medium ${
+                product.stock > 10 ? 'text-green-400' : 
+                product.stock > 0 ? 'text-yellow-400' : 
+                'text-red-400'
+              }`}>
+                Stock: {product.stock}
+              </span>
+            </div>
           </div>
         </div>
 
