@@ -1,18 +1,67 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { useCartStore } from '../store/useCartStore'
 
 const CartItem = ({ item }) => {
-  const { incrementQuantity, decrementQuantity, removeItem } = useCartStore()
+  const { incrementQuantity, decrementQuantity, removeItem, updateQuantity } = useCartStore()
   const [imageError, setImageError] = useState(false)
+  const [inputValue, setInputValue] = useState(item.quantity.toString())
+  
+  // ✅ Sincronizar el input cuando cambia la cantidad desde los botones
+  useEffect(() => {
+    setInputValue(item.quantity.toString())
+  }, [item.quantity])
   
   const API_URL = import.meta.env.VITE_URL
 
   const formatPrice = (price) => {
-    return Number(price).toFixed(2).replace('.', ',')
+    // Convertir a número con 2 decimales
+    const num = Number(price).toFixed(2)
+    // Separar parte entera y decimal
+    const [integer, decimal] = num.split('.')
+    // Agregar puntos como separador de miles
+    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    // Retornar con coma para decimales
+    return `${formattedInteger},${decimal}`
   }
 
   const subtotal = item.price * item.quantity
+
+  // ✅ Manejar cambio en el input
+  const handleInputChange = (e) => {
+    const value = e.target.value
+    
+    // Solo permitir números y máximo 3 dígitos
+    if (value === '' || /^\d{1,3}$/.test(value)) {
+      setInputValue(value)
+    }
+  }
+
+  // ✅ Manejar cuando el usuario termina de editar (pierde el foco o presiona Enter)
+  const handleInputBlur = () => {
+    let newQuantity = parseInt(inputValue) || 1
+    
+    // Validar que no sea menor a 1
+    if (newQuantity < 1) {
+      newQuantity = 1
+    }
+    
+    // Validar que no supere el stock
+    if (newQuantity > item.stock) {
+      newQuantity = item.stock
+    }
+    
+    // Actualizar la cantidad en el store
+    updateQuantity(item.id, newQuantity)
+    setInputValue(newQuantity.toString())
+  }
+
+  // ✅ Manejar Enter
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.target.blur() // Dispara el blur que valida
+    }
+  }
 
   // ✅ Construir URL de imagen correctamente
   const getImageUrl = () => {
@@ -50,36 +99,50 @@ const CartItem = ({ item }) => {
         <h3 className="font-semibold text-white text-lg mb-1 truncate">
           {item.name}
         </h3>
-        <p className="text-green-400 font-medium">
+        <p className="text-green-400 font-medium mb-1">
           ${formatPrice(item.price)} c/u
+        </p>
+        {/* ✅ Mostrar stock disponible */}
+        <p className="text-slate-400 text-sm">
+          Stock disponible: <span className="text-white font-medium">{item.stock}</span>
         </p>
       </div>
 
-      {/* Controles de cantidad */}
-      <div className="flex items-center gap-3">
-        {/* Botón decrementar */}
-        <button
-          onClick={() => decrementQuantity(item.id)}
-          className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-900 text-white rounded-lg transition-colors border border-slate-600"
-          aria-label="Disminuir cantidad"
-        >
-          <Minus className="w-4 h-4" />
-        </button>
+      {/* Controles de cantidad mejorados */}
+      <div className="flex flex-col items-center gap-2">
+        <span className="text-xs text-slate-400">Cantidad</span>
+        <div className="flex items-center gap-2">
+          {/* Botón decrementar */}
+          <button
+            onClick={() => decrementQuantity(item.id)}
+            disabled={item.quantity <= 1}
+            className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-900 text-white rounded-lg transition-colors border border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Disminuir cantidad"
+          >
+            <Minus className="w-4 h-4" />
+          </button>
 
-        {/* Cantidad */}
-        <span className="w-12 text-center font-semibold text-white text-lg">
-          {item.quantity}
-        </span>
+          {/* ✅ Input editable para cantidad */}
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            onKeyPress={handleKeyPress}
+            className="w-16 h-8 text-center font-semibold text-white text-lg bg-slate-800 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Cantidad"
+          />
 
-        {/* Botón incrementar */}
-        <button
-          onClick={() => incrementQuantity(item.id)}
-          disabled={item.quantity >= item.stock}
-          className="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Aumentar cantidad"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
+          {/* Botón incrementar */}
+          <button
+            onClick={() => incrementQuantity(item.id)}
+            disabled={item.quantity >= item.stock}
+            className="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Aumentar cantidad"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Subtotal y eliminar */}

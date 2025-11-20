@@ -8,8 +8,16 @@ const CartSummary = ({ onCheckout, loading = false }) => {
   const totalPrice = getTotalPrice()
 
   const formatPrice = (price) => {
-    return Number(price).toFixed(2).replace('.', ',')
+    // Convertir a número con 2 decimales
+    const num = Number(price).toFixed(2)
+    // Separar parte entera y decimal
+    const [integer, decimal] = num.split('.')
+    // Agregar puntos como separador de miles
+    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    // Retornar con coma para decimales
+    return `${formattedInteger},${decimal}`
   }
+
 
   return (
     <div className="bg-slate-700 rounded-xl p-6 sticky top-6 border border-slate-600">

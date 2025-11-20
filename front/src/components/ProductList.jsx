@@ -12,20 +12,6 @@ const ProductList = ({ products, onDeleteProduct, isAuthenticated, isAdmin }) =>
           <p className="text-sm font-medium text-slate-300">
             Total de productos: <span className="text-blue-400 font-bold">{products.length}</span>
           </p>
-          {products.length > 0 && (
-            <div className="flex flex-col sm:flex-row gap-4 text-sm text-slate-400">
-              <p>
-                Stock total: <span className="font-semibold text-slate-300">
-                  {products.reduce((sum, product) => sum + (product.stock || 0), 0)} unidades
-                </span>
-              </p>
-              <p>
-                Valor total: <span className="font-semibold text-green-400">
-                  ${products.reduce((sum, product) => sum + (product.price * product.stock || 0), 0).toFixed(2).replace('.', ',')}
-                </span>
-              </p>
-            </div>
-          )}
         </div>
       </div>
 

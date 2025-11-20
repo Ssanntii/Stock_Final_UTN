@@ -46,17 +46,23 @@ const CartPage = () => {
       // Scroll al top para ver el mensaje
       window.scrollTo({ top: 0, behavior: 'smooth' })
 
-      // Redirigir al home después de 5 segundos
-      setTimeout(() => {
-        navigate('/')
-      }, 5000)
-
     } catch (err) {
       console.error('Error en checkout:', err)
       setError(err.message || 'Error al procesar la compra')
     } finally {
       setLoading(false)
     }
+  }
+  
+  const formatPrice = (price) => {
+    // Convertir a número con 2 decimales
+    const num = Number(price).toFixed(2)
+    // Separar parte entera y decimal
+    const [integer, decimal] = num.split('.')
+    // Agregar puntos como separador de miles
+    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    // Retornar con coma para decimales
+    return `${formattedInteger},${decimal}`
   }
 
   // ✅ Usar modal para confirmar limpieza
@@ -123,7 +129,7 @@ const CartPage = () => {
                         {item.name} x{item.quantity}
                       </span>
                       <span className="text-green-400 font-medium">
-                        ${item.subtotal.toFixed(2)}
+                        ${formatPrice(item.subtotal)}
                       </span>
                     </div>
                   ))}
@@ -132,7 +138,7 @@ const CartPage = () => {
                 <div className="border-t border-slate-700 mt-4 pt-4 flex justify-between">
                   <span className="text-white font-bold">Total</span>
                   <span className="text-2xl text-green-400 font-bold">
-                    ${orderDetails.total.toFixed(2)}
+                    ${formatPrice(orderDetails.total)}
                   </span>
                 </div>
               </div>
@@ -154,10 +160,6 @@ const CartPage = () => {
               <ArrowLeft className="w-4 h-4" />
               Volver a Productos
             </Link>
-
-            <p className="text-slate-500 text-sm mt-4">
-              Serás redirigido automáticamente en unos segundos...
-            </p>
           </div>
         </main>
       </div>
