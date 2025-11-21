@@ -1,6 +1,6 @@
 # Proyecto de Programación IV
-## Gestor de Stock con autenticación de Usuarios.
-**Documentación Oficial** con todo lo necesario para utilizar el gestor de stock en su sistema.
+## E-commerce fullstack.
+**Documentación Oficial** con todo lo necesario para utilizar el e-commerce en su sistema.
 
 - [Guía de instalación y configuración](https://github.com/Ssanntii/Stock_Final_UTN/blob/main/docs/Instalaci%C3%B3n%20y%20configuraci%C3%B3n.md)
 - [Rutas del Backend](https://github.com/Ssanntii/Stock_Final_UTN/blob/main/docs/RutasBackend.md).
