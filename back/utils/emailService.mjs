@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 export const sendVerificationEmail = async (email, fullName, verificationCode) => {
   try {
     const mailOptions = {
-      from: `"GesShop" <${process.env.EMAIL_USER}>`,
+      from: `"Gestock" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Verifica tu cuenta - Código de verificación',
       html: `
@@ -205,7 +205,7 @@ export const sendPurchaseConfirmation = async (email, fullName, orderDetails) =>
     `).join('')
 
     const mailOptions = {
-      from: `"GesShop" <${process.env.EMAIL_USER}>`,
+      from: `"Gestock" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `Confirmación de compra #${orderNumber}`,
       html: `
@@ -387,7 +387,7 @@ export const sendPurchaseConfirmation = async (email, fullName, orderDetails) =>
                   Si tienes alguna pregunta sobre tu pedido, no dudes en contactarnos.
                 </p>
                 <p class="footer-text">
-                  © ${new Date().getFullYear()} GesShop. Todos los derechos reservados.
+                  © ${new Date().getFullYear()} Gestock. Todos los derechos reservados.
                 </p>
               </div>
             </div>
