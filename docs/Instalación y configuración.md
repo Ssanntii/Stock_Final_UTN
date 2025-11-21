@@ -73,13 +73,6 @@ CREATE DATABASE gestock_db;
 EXIT;
 ```
 
-### Crear Carpetas Necesarias
-
-Las carpetas se crearán automáticamente al iniciar el servidor, pero puedes crearlas manualmente:
-```bash
-mkdir -p uploads/profiles/products
-```
-
 ---
 
 ## 3️⃣ Configurar Frontend
@@ -131,12 +124,7 @@ npm run dev
 
 Deberías ver:
 ```
-🚀 Servidor iniciado en http://localhost:3000
-📁 Archivos estáticos en http://localhost:3000/uploads
-✅ Base de datos sincronizada
-✅ Asociaciones de Sequelize configuradas
-✅ Sistema de archivos configurado
-✅ Servidor de email listo para enviar mensajes (Mailtrap)
+Servidor iniciado en http://localhost:3000
 ```
 
 ### Terminal 2 - Frontend
@@ -328,45 +316,10 @@ proyecto/
 
 ---
 
-## 🎯 Checklist de Configuración
-
-- [ ] Node.js instalado
-- [ ] MySQL instalado y corriendo
-- [ ] Base de datos creada
-- [ ] Backend: dependencias instaladas
-- [ ] Backend: `.env` configurado
-- [ ] Frontend: dependencias instaladas
-- [ ] Frontend: `.env` configurado
-- [ ] Cuenta de Mailtrap creada
-- [ ] Credenciales de Mailtrap en `.env`
-- [ ] Backend corriendo en puerto 3000
-- [ ] Frontend corriendo en puerto 5173
-- [ ] Usuario admin creado y verificado
-- [ ] Primer producto de prueba creado
-- [ ] Email de verificación recibido
-- [ ] Compra de prueba realizada
-- [ ] Email de confirmación recibido
-
----
-
-## 🚀 Deploy a Producción
-
-### Preparación
-```bash
-# Frontend - Build
-cd front
-npm run build
-
-# Backend - Variables de entorno
-# Cambiar .env a valores de producción
-```
-
----
-
 ## 📚 Recursos Adicionales
 
 - [Documentación de Sequelize](https://sequelize.org/)
 - [Documentación de React Router](https://reactrouter.com/)
 - [Documentación de Zustand](https://zustand-demo.pmnd.rs/)
-- [Documentación de Mailtrap](https://mailtrap.io/docs/)
+- [Documentación de Mailtrap](https://help.mailtrap.io/article/155-sdk?_gl=1*1ev5hom*_gcl_au*MzcwMzE0NTkwLjE3NjM1NjA4ODQ.)
 - [Documentación de Multer](https://github.com/expressjs/multer)
