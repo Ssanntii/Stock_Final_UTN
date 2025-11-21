@@ -85,7 +85,7 @@ const CartPage = () => {
             <div className="flex items-center justify-between">
               <Link to="/" className="flex items-center gap-3 group">
                 <img src={logo} alt='logo' className="w-10 h-10 shrink-0" />
-                <span className="text-lg font-semibold text-white">Volver a Productos</span>
+                <span className="text-lg font-semibold text-white">Tu Compra | {orderDetails.orderNumber}</span>
               </Link>
               {/* ✅ UserMenu también en pantalla de éxito */}
               <UserMenu />
@@ -175,7 +175,7 @@ const CartPage = () => {
             <Link to="/" className="flex items-center gap-3 group">
               <ArrowLeft className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
               <img src={logo} alt='logo' className="w-10 h-10 shrink-0" />
-              <span className="text-lg font-semibold text-white">Volver a Productos</span>
+              <span className="text-lg font-semibold text-white">Carrito</span>
             </Link>
 
             {/* ✅ UserMenu en el header */}
@@ -235,7 +235,7 @@ const CartPage = () => {
                 Tu carrito está vacío
               </h2>
               <p className="text-slate-400 mb-6">
-                Agrega productos para comenzar tu compra
+                Agregá productos para comenzar tu compra
               </p>
               <Link
                 to="/"
